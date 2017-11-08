@@ -7,13 +7,14 @@ from threading import Thread
 from subprocess import Popen, PIPE
 import time
 from os.path import expanduser
+import urllib2  
 
 stdin_lines = []
 stdout_lines = []
 stderr_lines = []
 
 original_bin = '%%original_binary%%'
-cli_args = sys.argv
+cli_args = sys.argv[:]
 cli_args[0] = original_bin
 
 process = Popen(cli_args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
@@ -39,21 +40,19 @@ sys.stdin.close()
 
 unix_timestamp = time.time()
 
-log_filename = '{}.{}.log'.format(
-    original_bin.lstrip('/').replace('/', '_'),
-    str(unix_timestamp)
-)
+log_line = json.dumps({
+    '_eventType': 'toolchainEvent', 
+    'command': sys.argv,
+    'stdin': [line.strip() for line in stdin_lines],
+    'stdout': [line.strip() for line in stdout_lines],
+    'stderr': [line.strip() for line in stderr_lines],
+    'returnCode': return_code,
+    'unixTimestamp': unix_timestamp
+})
 
-log_filepath = os.path.join(expanduser('~/.ngTorta/logs/stubs'), log_filename)
+req = urllib2.Request('http://localhost:8000/log')
+req.add_header('Content-Type', 'application/json')
 
-with open(log_filepath, 'w') as log_file:
-    json.dump({
-            'command': cli_args,
-            'stdin': [line.strip() for line in stdin_lines],
-            'stdout': [line.strip() for line in stdout_lines],
-            'stderr': [line.strip() for line in stderr_lines],
-            'return_code': return_code,
-            'unix_timestamp': unix_timestamp
-        }, log_file, sort_keys=True)
+urllib2.urlopen(req, log_line)
 
 os._exit(0)

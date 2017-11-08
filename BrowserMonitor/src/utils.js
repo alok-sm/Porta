@@ -12,9 +12,13 @@ function getSelectionText() {
 }
 
 function getMyTab(callback){
-    chrome.runtime.sendMessage('getMyTab', callback);
+    callBackgroundScript('getMyTab', null, callback);
 }
 
 function getScrollPercent(scroll){
     return 100 * scroll / ($(document).height() - $(window).height());
+}
+
+function callBackgroundScript(name, data, callback){
+    chrome.runtime.sendMessage({name: name, data: data}, callback);
 }

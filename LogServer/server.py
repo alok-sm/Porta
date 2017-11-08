@@ -9,10 +9,10 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-@app.route('/browser_log', methods=['POST'])
-def browser_log():
+@app.route('/log', methods=['POST'])
+def log():
     data = request.get_json()
-    print data
+    print "\n###############\n\n{}".format(json.dumps(data, sort_keys=True))
     return jsonify({
         'status': 'success'
     })

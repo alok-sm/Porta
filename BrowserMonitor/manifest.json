@@ -28,10 +28,12 @@
         "http://*/*"
       ],
       "js": [
+        "src/error_monitor.js",
         "js/jquery/jquery.min.js",
         "js/jquery-getpath.js",
-        "src/api.js",
+        "js/devtools.js",
         "src/utils.js",
+        "src/api.js",
         "src/inject.js"
       ]
     }

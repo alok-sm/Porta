@@ -1,5 +1,3 @@
-from threading import Lock
-
 from flask import Flask
 from flask import jsonify
 from flask import request
@@ -13,7 +11,6 @@ class LogServer:
     def __init__(self, events):
         self.events = events
         self.flask_app = Flask(__name__)
-        self.log_lock = Lock()
         CORS(self.flask_app)
 
         @self.flask_app.route('/log', methods=['POST'])

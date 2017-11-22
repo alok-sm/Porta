@@ -18,12 +18,12 @@ tutorial_website = ''
 @atexit.register
 def on_exit():
     global recording_name
-    log_filepath = os.path.join(logsDir, '{}.jsonlog'.format(recording_name))
+    log_filepath = os.path.join(logsDir, '{}.json'.format(recording_name))
     with open(log_filepath, 'w') as log_file:
         json.dump({
             'recording_name': recording_name,
             'events': events,
-
+            'tutorial_website': tutorial_website
         }, log_file, indent=4, sort_keys=True)
 
     clean()
@@ -42,14 +42,14 @@ def start(args):
         print('no recording_name or tutorial_website given')
         return
 
-    tutorial_website = args[1]
-    recording_name = args[2]
+    recording_name = args[1]
+    tutorial_website = args[2]
 
     utils.setup_directories()
     utils.setup_bashrc()
     generate_all_shims()
     utils.restart_bash()
-    utils.restart_chrome_with_extension()
+    utils.restart_chrome_with_extension(tutorial_website)
 
     log_server = LogServer(events)
     log_server.start()

@@ -5,15 +5,15 @@ messageFunctions = {
     'getMyTab': function(message, sender, sendResponse){
         sendResponse(sender.tab);
     },
-    'log': function(message, sender, sendResponse){
-        data = message.data;
+    'log': function(message, sender){
+        var data = message.data;
         data.tab = {
             id: sender.tab.id,
             url: sender.tab.url
-        }
+        };
         api.logFromBackgroundScript(data);
     }
-}
+};
 
 chrome.extension.onMessage.addListener(
     function(message, sender, sendResponse) {
@@ -38,10 +38,10 @@ chrome.tabs.onUpdated.addListener(function() {
 
 chrome.tabs.onRemoved.addListener(function(){
     chrome.tabs.query({}, onTabsChange);
-})
+});
 
 function onTabsChange(native_tabs){
-    tabs = [];
+    var tabs = [];
     for (var i = 0; i < native_tabs.length; i++) {
         var ith_tab = native_tabs[i];
         tabs.push({

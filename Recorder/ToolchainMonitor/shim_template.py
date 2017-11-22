@@ -6,7 +6,6 @@ import json
 from threading import Thread
 from subprocess import Popen, PIPE
 import time
-from os.path import expanduser
 import urllib2  
 
 stdin_lines = []

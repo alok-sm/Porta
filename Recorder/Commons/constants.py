@@ -1,10 +1,10 @@
 from os.path import expanduser
 
-tempDir = expanduser('~/.ngTortaTemp')
-stubsDir = expanduser('~/.ngTortaTemp/stubs')
-stubsPath = expanduser('~/.ngTortaTemp/stubPath')
+tempDir = expanduser('~/.portaTemp')
+stubsDir = expanduser('~/.portaTemp/stubs')
+stubsPath = expanduser('~/.portaTemp/stubPath')
 
-logsDir = expanduser('~/.ngTortaLogs')
+logsDir = expanduser('~/.portaLogs')
 
 bashrc_path = expanduser("~/.bash_profile")
 
@@ -13,11 +13,11 @@ logserver_port = 8000
 
 bashrc_stub_str = '''
 
-### START NGTORTA STUFF ###
+### START PORTA STUFF ###
 ### DONT MODIFY ANYTHING IN THIS BLOCK!!!! ###
 ### THIS SHOULD BE AT THE END OF THIS FILE ###
-if [ -f {ngTortaStubPath} ]; then
-    export PATH=$(cat {ngTortaStubPath})
+if [ -f {portaStubPath} ]; then
+    export PATH=$(cat {portaStubPath})
 fi
-### END NGTORTA STUFF ###
-'''.format(ngTortaStubPath=stubsPath)
+### END PORTA STUFF ###
+'''.format(portaStubPath=stubsPath)

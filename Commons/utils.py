@@ -1,10 +1,10 @@
 import os
 
-from Recorder.Commons.constants import bashrc_stub_str
-from Recorder.Commons.constants import stubsDir
-from Recorder.Commons.constants import logsDir
-from Recorder.Commons.constants import bashrc_path
-from Recorder.Commons.constants import tempDir
+from Commons.constants import bashrc_path
+from Commons.constants import bashrc_stub_str
+from Commons.constants import logsDir
+from Commons.constants import stubsDir
+from Commons.constants import tempDir
 
 
 def mkdir_p(path):

@@ -1,16 +1,32 @@
 #!/usr/bin/env python3
 
-import os
 import atexit
+import json
+import os
 import sys
 
-from Recorder.Commons import utils
-from Recorder.Commons.constants import logsDir
-from Recorder.ToolchainMonitor.shim_generator import generate_all_shims
+from Commons.constants import logsDir
+from Commons import utils
 from Recorder.LoggingServer.server import LogServer
+from Recorder.ToolchainMonitor.shim_generator import generate_all_shims
 
+events = []
+recording_name = ''
 
 @atexit.register
+def exit():
+    global recording_name
+    log_filepath = os.path.join(logsDir, '{}.jsonlog'.format(recording_name))
+    with open(log_filepath, 'w') as log_file:
+        json.dump({
+            'recording_name': recording_name,
+            'events': events,
+
+        }, log_file, indent=4, sort_keys=True)
+
+    clean()
+
+
 def clean():
     utils.clean_bashrc()
     utils.clean_directories()
@@ -18,9 +34,13 @@ def clean():
 
 
 def start(args, restore):
+    global recording_name
+
     if len(args) < 2:
         print('no recording_name given')
         return
+
+    recording_name = args[1]
 
     utils.setup_directories()
     utils.setup_bashrc()
@@ -28,9 +48,8 @@ def start(args, restore):
     utils.restart_bash()
     utils.restart_chrome_with_extension(restore)
 
-    with open(os.path.join(logsDir, '{}.jsonlog'.format(args[1])), 'w') as log_file:
-        log_server = LogServer(log_file)
-        log_server.start()
+    log_server = LogServer(events)
+    log_server.start()
 
 
 def record(args):

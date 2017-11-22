@@ -1,8 +1,11 @@
 import os
 from os import listdir
 
-from Recorder.Commons.constants import stubsDir, stubsPath
-from Recorder.Commons.utils import mkdir_p, setup_bashrc, clean_bashrc
+from Commons.utils import mkdir_p
+from Commons.utils import setup_bashrc
+from Commons.utils import clean_bashrc
+from Commons.constants import stubsDir
+from Commons.constants import stubsPath
 
 binaries_to_monitor = [
     '/usr/bin/gcc',

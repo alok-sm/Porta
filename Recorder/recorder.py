@@ -2,6 +2,7 @@
 
 import os
 import atexit
+import sys
 
 from Recorder.Commons import utils
 from Recorder.Commons.constants import logsDir
@@ -32,7 +33,7 @@ def start(args, restore):
         log_server.start()
 
 
-def main(args):
+def record(args):
     if len(args) < 2:
         print('start / clean?')
         return
@@ -45,4 +46,4 @@ def main(args):
 
 
 if __name__ == '__main__':
-    main(sys.argv)
+    record(sys.argv)

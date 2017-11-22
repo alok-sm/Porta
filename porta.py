@@ -9,7 +9,7 @@ def main():
         print('recorder / viewer?')
         return
     if sys.argv[1] == 'recorder':
-        recorder.main(sys.argv[1:])
+        recorder.record(sys.argv[1:])
 
 
 if __name__ == '__main__':

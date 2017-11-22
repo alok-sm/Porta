@@ -42,22 +42,23 @@ def stop_chrome():
     os.system('pkill "Google Chrome"')
 
 
-def generate_chrome_cmd(restore=False, extension_path=None):
+def generate_chrome_cmd(extension_path=None):
     extension_str = '' if extension_path is None else '--load-extension={}'.format(extension_path)
-    restore_str = '--restore-last-session' if restore else ''
+    chrome_cmd = '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ' \
+           '{} > /dev/null 2>/dev/null &'.format(extension_str)
+    print(chrome_cmd)
 
-    return '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ' \
-           '{} {} > /dev/null 2>/dev/null &'.format(extension_str, restore_str)
+    return chrome_cmd
 
 
-def restart_chrome(restore):
+def restart_chrome():
     stop_chrome()
-    os.system(generate_chrome_cmd(restore=restore))
+    os.system(generate_chrome_cmd())
 
 
-def restart_chrome_with_extension(restore):
+def restart_chrome_with_extension():
     stop_chrome()
     extension_path = os.path.abspath(os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
-        '../BrowserMonitor'))
-    os.system(generate_chrome_cmd(restore=restore, extension_path=extension_path))
+        '../Recorder/BrowserMonitor'))
+    os.system(generate_chrome_cmd(extension_path=extension_path))

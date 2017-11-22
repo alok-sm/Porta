@@ -5,7 +5,7 @@ api.logFromBackgroundScript = function(data) {
     $.ajax(api.endpoint, {
         data : JSON.stringify(data),
         contentType : 'application/json',
-        type : 'POST',
+        type : 'POST'
     })
 };
 

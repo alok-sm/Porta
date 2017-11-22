@@ -22,13 +22,6 @@ class LogServer:
             self.events.append(data)
             return jsonify({'status': 'success'})
 
-        @self.flask_app.route('/browser_log', methods=['POST'])
-        def browser_log():
-            data = request.form
-            self.events.append(data)
-            return jsonify({'status': 'success'})
-
-
     def start(self):
         self.flask_app.run(host=logserver_host, port=logserver_port, threaded=True)
 

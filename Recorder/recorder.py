@@ -12,9 +12,11 @@ from Recorder.ToolchainMonitor.shim_generator import generate_all_shims
 
 events = []
 recording_name = ''
+tutorial_website = ''
+
 
 @atexit.register
-def exit():
+def on_exit():
     global recording_name
     log_filepath = os.path.join(logsDir, '{}.jsonlog'.format(recording_name))
     with open(log_filepath, 'w') as log_file:
@@ -30,39 +32,39 @@ def exit():
 def clean():
     utils.clean_bashrc()
     utils.clean_directories()
-    utils.stop_chrome()
+    utils.restart_chrome()
 
 
-def start(args, restore):
-    global recording_name
+def start(args):
+    global recording_name, tutorial_website
 
-    if len(args) < 2:
-        print('no recording_name given')
+    if len(args) < 3:
+        print('no recording_name or tutorial_website given')
         return
 
-    recording_name = args[1]
+    tutorial_website = args[1]
+    recording_name = args[2]
 
     utils.setup_directories()
     utils.setup_bashrc()
     generate_all_shims()
     utils.restart_bash()
-    utils.restart_chrome_with_extension(restore)
+    utils.restart_chrome_with_extension()
 
     log_server = LogServer(events)
     log_server.start()
 
 
-def record(args):
-    if len(args) < 2:
+def main():
+    if len(sys.argv) < 2:
         print('start / clean?')
         return
-    if args[1] == 'start':
-        start(args[1:], restore=False)
-    elif args[1] == 'start-restore':
-        start(args[1:], restore=True)
-    elif args[1] == 'clean':
+
+    if sys.argv[1] == 'start':
+        start(sys.argv[1:])
+    elif sys.argv[1] == 'clean':
         clean()
 
 
 if __name__ == '__main__':
-    record(sys.argv)
+    main()

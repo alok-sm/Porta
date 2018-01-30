@@ -1,11 +1,3 @@
-/* eslint-disable spaced-comment */
-/*!
-    devtools-detect
-    Detect if DevTools is open
-    https://github.com/sindresorhus/devtools-detect
-    by Sindre Sorhus
-    MIT License
-*/
 (function () {
     'use strict';
     var devtools = {

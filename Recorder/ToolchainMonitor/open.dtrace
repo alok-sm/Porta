@@ -1,0 +1,9 @@
+#!/usr/sbin/dtrace -s
+
+#pragma D option quiet
+#pragma D option switchrate=100hz
+
+syscall::open*:entry
+{
+    printf("%s\n", cleanpath(copyinstr(arg0)));
+}

@@ -1,0 +1,31 @@
+{
+  "name": "Porta Viewer",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "Porta Viewer Extension",
+  "homepage_url": "http://example.com",
+  "default_locale": "en",
+  "browser_action": {
+    "default_title": "Porta Viewer Extension",
+    "default_popup": "src/browser_action/browser_action.html"
+  },
+  "permissions": [
+    "*://*/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "js": [
+        "src/inject/jquery.js",
+        "src/inject/qtip.js",
+        "src/inject/inject.js"
+      ],
+      "css" : [
+        "src/inject/qtip.css"
+      ]
+    }
+  ]
+}

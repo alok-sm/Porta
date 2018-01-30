@@ -11,6 +11,9 @@ bashrc_path = expanduser("~/.bash_profile")
 logserver_host = '0.0.0.0'
 logserver_port = 8000
 
+viewserver_host = '0.0.0.0'
+viewserver_port = 8000
+
 bashrc_stub_str = '''
 
 ### START PORTA STUFF ###

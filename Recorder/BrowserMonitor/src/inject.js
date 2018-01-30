@@ -1,5 +1,7 @@
 var TIMEOUT_MILLISECONDS = 500;
 var scrollTimeout, mouseTimeout;
+var MAX_ELEMENT_HEIGHT = 500;
+var MIN_ELEMENT_HEIGHT = 50;
 
 // Set up onPageLoad function
 chrome.extension.sendMessage({}, function(response) {
@@ -20,7 +22,9 @@ function onPageLoad(){
             clearTimeout(mouseTimeout)
         }
         mouseTimeout = setTimeout(function(){
-            onMouseEnter($(event.target).getPath());
+            if(event.target.offsetHeight < MAX_ELEMENT_HEIGHT){
+                onMouseEnter($(event.target).getPath());
+            }
         }, TIMEOUT_MILLISECONDS);
 
     });

@@ -16,8 +16,9 @@ $.fn.extend({
                     name += ':nth-child(' + index + ')';
                 }
             }
-
-            path = name + (path ? '>' + path : '');
+            if(node.height >= MIN_ELEMENT_HEIGHT){
+                path = name + (path ? '>' + path : '');
+            }
             node = parent;
         }
 

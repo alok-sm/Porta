@@ -1,3 +1,6 @@
+import atexit
+import json
+
 from flask import Flask
 from flask import jsonify
 from flask import request
@@ -5,6 +8,12 @@ from flask_cors import CORS
 
 from Commons.constants import logserver_host
 from Commons.constants import logserver_port
+
+events = []
+
+@atexit.register
+def at_exit():
+    print(json.dumps(events, indent=4, sort_keys=True))
 
 
 class LogServer:
@@ -24,14 +33,9 @@ class LogServer:
 
 
 def main():
-    import sys
-    if len(sys.argv) < 2:
-        print('no recording name')
-        sys.exit()
-    else:
-        with open(sys.argv[1], 'w') as log_file:
-            logserver = LogServer(log_file)
-            logserver.start()
+    global events
+    logserver = LogServer(events)
+    logserver.start()
 
 
 if __name__ == '__main__':

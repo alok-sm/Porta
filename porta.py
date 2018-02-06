@@ -6,7 +6,7 @@ from Recorder import recorder
 
 def main():
     if len(sys.argv) < 2:
-        print('recorder / viewer / clean?')
+        print('record / view / clean?')
         return
     if sys.argv[1] == 'record':
         recorder.start(sys.argv[1:])

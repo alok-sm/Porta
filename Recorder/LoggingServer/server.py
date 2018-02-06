@@ -25,6 +25,7 @@ class LogServer:
         @self.flask_app.route('/log', methods=['POST'])
         def log():
             data = request.get_json()
+            print(data)
             self.events.append(data)
             return jsonify({'status': 'success'})
 

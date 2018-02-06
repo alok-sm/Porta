@@ -6,6 +6,7 @@ from flask import Flask
 from flask import jsonify
 from flask_cors import CORS
 from urllib.parse import urlparse
+import urllib.request
 from collections import Counter
 
 from Commons.constants import viewserver_host
@@ -97,6 +98,14 @@ class ViewServer:
                 self.log['events'][0]['timestamp'],
                 self.log['events'][-1]['timestamp']
             ])
+
+        @self.flask_app.route('/proxy', methods=['GET'])
+        def proxy():
+            url = request.args['url']
+            with urllib.request.urlopen(url) as response:
+                return response.read()
+
+
 
     def start(self):
         self.flask_app.run(host=viewserver_host, port=viewserver_port, ssl_context='adhoc')

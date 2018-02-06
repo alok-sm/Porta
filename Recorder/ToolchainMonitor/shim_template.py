@@ -33,7 +33,7 @@ def start_dtrace(pid):
     )
     return Popen(cmd, shell=True, stdout=PIPE)
 
-process = Popen('sleep 1; ' + ' '.join(cli_args), shell=True stdin=PIPE, stdout=PIPE, stderr=PIPE)
+process = Popen('sleep 1; ' + ' '.join(cli_args), shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
 threads = [
     Thread(target=copy_file_contents, args=(sys.stdin     , process.stdin, stdin_lines  )),

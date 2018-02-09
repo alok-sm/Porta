@@ -8,27 +8,22 @@
   "permissions": [
     "*://*/*"
   ],
+   "background": {
+    "scripts": [ "src/background/background.js" ],
+    "persistent": true
+  },
   "content_scripts": [
     {
-      "matches": [
-        "https://*/*",
-        "http://*/*"
-      ],
-      "js": [
-        "src/inject/js/jquery.js",
-        "src/inject/js/main.js"
-      ],
-      "css" : []
-    },
-    {
-      "matches": [
-        "http://localhost:3000/*"
-      ],
+      "all_frames": true,
+      "matches": ["<all_urls>"],
       "js": [
         "src/inject/js/jquery.js",
         "src/inject/js/qtip.js",
         "src/inject/js/sidebarUtils.js",
-        "src/inject/js/sidebar.js"
+        "src/inject/js/messaging.js",
+        "src/inject/js/sidebar-extension.js",
+        "src/inject/js/main-extension.js",
+        "src/inject/js/iframe.js"
       ],
       "css" : [
         "src/inject/css/qtip.css"

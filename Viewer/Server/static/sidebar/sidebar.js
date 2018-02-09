@@ -1,3 +1,3 @@
 $(function(){
-    console.log('from sidebar');
+    // console.log('from sidebar');
 });

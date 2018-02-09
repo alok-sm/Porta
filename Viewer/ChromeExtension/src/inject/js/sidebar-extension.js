@@ -1,12 +1,11 @@
-function onLoad(){
-    console.log('from sidebar extension');
-}
+function sidebarOnLoad(){
+    // console.log('sidebar extension onLoad. sending to main', window.location.href);
+    // sendMessageToMain('hello main!', function(response){
+    //     console.log('main replied', response)
+    // });
 
-chrome.extension.sendMessage({}, function(response) {
-    var readyStateCheckInterval = setInterval(function() {
-        if (document.readyState === "complete") {
-            clearInterval(readyStateCheckInterval);
-            onLoad()
-        }
-    }, 10);
-});
+    onMessageFromMain(function(payload){
+        console.log('message from main -', payload);
+        return 'hello to you too main!';
+    });
+}

@@ -1,5 +1,5 @@
 $(function(){
-    console.log('from main');
+    // console.log('from main');
 
     url = get('url');
     if(url){

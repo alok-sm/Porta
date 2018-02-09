@@ -1,22 +1,12 @@
-function onLoad(){
-    console.log('from main extension');
+function mainOnLoad(){
+    // console.log('main extension onLoad sending to sidebar', window.location.href);
+    sendMessageToSidebar('hello sidebar!', function(response){
+        console.log('sidebar replied', response)
+    });
+
+    // onMessageFromSidebar(function(payload){
+    //     console.log('message from sidebar -', payload);
+    //     return 'hello to you too, sidebar';
+    // });
 }
 
-function inIframe () {
-    try {
-        return window.self !== window.top;
-    } catch (e) {
-        return true;
-    }
-}
-
-chrome.extension.sendMessage({}, function(response) {
-    if(inIframe()){
-        var readyStateCheckInterval = setInterval(function() {
-            if (document.readyState === "complete") {
-                clearInterval(readyStateCheckInterval);
-                onLoad()
-            }
-        }, 10);        
-    }
-});

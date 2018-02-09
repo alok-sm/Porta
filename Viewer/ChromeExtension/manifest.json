@@ -8,9 +8,6 @@
   "permissions": [
     "*://*/*"
   ],
-   "background": {
-    "persistent": true
-  },
   "content_scripts": [
     {
       "all_frames": true,

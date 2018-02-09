@@ -9,7 +9,6 @@
     "*://*/*"
   ],
    "background": {
-    "scripts": [ "src/background/background.js" ],
     "persistent": true
   },
   "content_scripts": [

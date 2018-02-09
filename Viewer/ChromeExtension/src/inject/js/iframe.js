@@ -1,9 +1,14 @@
 function onLoad(){
-    var href = window.location.href;
-    if(href === 'http://localhost:3000/static/sidebar/index.html'){
-        sidebarOnLoad();
-    }else{
-        mainOnLoad();
+    if(window.location.href === window.top.document.getElementById('porta-sidebar').contentWindow.location.href){
+        if(sidebarOnLoad){
+            sidebarOnLoad();    
+        }
+    }
+
+    if(window.location.href === window.top.document.getElementById('porta-body').contentWindow.location.href){
+        if(mainOnLoad){
+            mainOnLoad();
+        }
     }
 }
 
@@ -23,6 +28,6 @@ chrome.extension.sendMessage({ignore: true}, function(response) {
                 clearInterval(readyStateCheckInterval);
                 onLoad()
             }
-        }, 10);        
+        }, 100);
     }
 });

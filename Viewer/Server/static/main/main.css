@@ -5,9 +5,6 @@ body{
 #porta-sidebar {
     max-width: 80px;
     float: left;
-    /*background: red;*/
-    padding-left: 5px;
-    padding-right: 5px;
 }
 
 #porta-body {

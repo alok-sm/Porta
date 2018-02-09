@@ -1,0 +1,23 @@
+body{
+    margin: 0px;
+}
+
+#porta-sidebar {
+    max-width: 80px;
+    float: left;
+    /*background: red;*/
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+#porta-body {
+    width: 100%;
+}
+
+#fake-body {
+  display: flex;
+}
+
+iframe{
+    border: 1px solid black
+}

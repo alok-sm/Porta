@@ -23,7 +23,17 @@ function createHeatmapElement(element){
 }
 
 function createErrorElement(element){
-
+    $('body').append('<div class="qtip-anchor latest-qtip" style="top: ' + element.bounds.y + 'px; height: ' + element.bounds.height + 'px"></div>');
+    
+    $('.latest-qtip').qtip({
+        content: {
+            title: 'Error',
+            text: '<p>error here</p>'
+        },
+        style: {
+            classes: 'qtip-orange qtip-shadow'
+        }
+    });
 }
 
 function renderSidebar(){

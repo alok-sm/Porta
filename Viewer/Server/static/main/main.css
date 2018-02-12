@@ -5,6 +5,7 @@ body{
 #porta-sidebar {
     max-width: 80px;
     float: left;
+    border-right: 1px solid #999;
 }
 
 #porta-body {
@@ -16,5 +17,5 @@ body{
 }
 
 iframe{
-    border: 1px solid black
+    /*border: 1px solid black*/
 }

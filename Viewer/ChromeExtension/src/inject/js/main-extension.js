@@ -1,16 +1,14 @@
-function mainOnLoad(){
-
-}
+function mainOnLoad(){}
 
 function sendMessageToSidebar(message){
-    window.top.document.getElementById('porta-sidebar').contentWindow.postMessage(
-        message, 
-        window.top.document.getElementById('porta-sidebar').contentWindow.location.href
+    getContentWindow('porta-sidebar').postMessage(
+        {message: message, namespace: 'porta'}, 
+        getContentWindow('porta-sidebar').location.href
     );
 }
 
-function onMessageFromSidebar(data){
-    var bounds = $(data.cssSelector)[0].getBoundingClientRect();
+function getBounds(data){
+    var bounds = $(data.cssPath)[0].getBoundingClientRect();
     data.bounds = {
         x: bounds.x,
         y: bounds.y,
@@ -18,12 +16,19 @@ function onMessageFromSidebar(data){
         width: bounds.width
     }
     sendMessageToSidebar(data);
-    // console.log(bounds);
 }
 
+function onMessageFromSidebar(message){
+    // console.log(message)
+    if(message.action === 'getBounds'){
+        getBounds(message.data);
+    }
+}
 
 window.addEventListener('message', function(event){
-    if(event.source.location.href !== window.top.document.getElementById('porta-body').contentWindow.location.href){
-        onMessageFromSidebar(event.data);
+    if(event.source.location.href !== getContentWindow('porta-body').location.href){
+        if(event.data.namespace && event.data.namespace === 'porta'){
+            onMessageFromSidebar(event.data.message);
+        }
     }
 }, false);

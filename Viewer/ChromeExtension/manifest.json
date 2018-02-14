@@ -14,13 +14,9 @@
       "matches": ["<all_urls>"],
       "js": [
         "src/inject/js/jquery.js",
-        "src/inject/js/qtip.js",
         "src/inject/js/sidebar-extension.js",
         "src/inject/js/main-extension.js",
         "src/inject/js/iframe.js"
-      ],
-      "css" : [
-        "src/inject/css/qtip.css"
       ]
     }
   ]

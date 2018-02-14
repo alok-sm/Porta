@@ -3,7 +3,7 @@ body{
 }
 
 #porta-sidebar {
-    max-width: 80px;
+    max-width: 40px;
     float: left;
     border-right: 1px solid #999;
 }

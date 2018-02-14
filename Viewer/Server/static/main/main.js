@@ -1,14 +1,11 @@
 $(function(){
-    // console.log('from main');
-
-    url = get('url');
-    if(url){
-        $("#porta-body").attr('src', url);
-    }
-
     $('#porta-body').load(function(){
         setIframeHeight('porta-body');
     });
+    
+    $.get('http://localhost:3000/url', function(response){
+        $("#porta-body").attr('src', response.url);   
+    })
 });
 
 function get(name){

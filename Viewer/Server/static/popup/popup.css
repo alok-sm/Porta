@@ -1,0 +1,10 @@
+.navbar-brand {
+    float: none !important;
+    width: 100% !important;
+    color: white !important; 
+    cursor: default !important;
+}
+
+body{
+    background-color: #eee;
+}

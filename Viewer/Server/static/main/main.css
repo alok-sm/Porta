@@ -3,7 +3,7 @@ body{
 }
 
 #porta-sidebar {
-    max-width: 40px;
+    max-width: 50px;
     float: left;
     border-right: 1px solid #999;
 }
@@ -14,6 +14,17 @@ body{
 
 #fake-body {
   display: flex;
+}
+
+#porta-bottombar {
+    width: 100%;
+    height: 45px;
+    border-top: 1px solid #999;
+}
+
+.navbar-default {
+    background-color: white;
+    border-color: #999;
 }
 
 iframe{

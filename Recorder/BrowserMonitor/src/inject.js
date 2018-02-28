@@ -35,7 +35,7 @@ function onPageLoad(){
         if(text != null){
             onSelectionChange(text)
         }
-    })
+    });
 
     // Set up the onScrollEnd event
     $(window).scroll(function(){

@@ -21,7 +21,7 @@ function setIframeHeight(id) {
     ifrm.style.visibility = 'hidden';
     ifrm.style.height = "10px"; // reset to minimal height ...
     // IE opt. for bing/msn needs a bit added or scrollbar appears
-    ifrm.style.height = getDocHeight( doc ) - 2 + "px";
+    ifrm.style.height = getDocHeight(doc) + "px";
     ifrm.style.visibility = 'visible';
 }
 

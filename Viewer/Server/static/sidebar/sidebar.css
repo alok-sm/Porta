@@ -1,8 +1,8 @@
 
 .heatmap-block{
-    background: #ff000020;
+    
     position: absolute;
-    width: 40px;
+    width: 20px;
     right: 0px;
 }
 
@@ -10,7 +10,12 @@
     z-index: 100;
     display: block;
     position: absolute;
+    height: 20px
     width: 20px;
-    left: 10px;
+    right:0px;
     cursor: pointer;
+}
+
+#slider{
+    flex: 1;
 }

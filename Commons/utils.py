@@ -39,7 +39,7 @@ def setup_bashrc():
 
 
 def stop_chrome():
-    os.system('pkill -9 "Google Chrome"')
+    os.system('pkill -9 "Chromium"')
 
 
 def generate_extension_str(extensions):

@@ -1,27 +1,26 @@
-$.fn.extend({
+jQuery.fn.extend({
     getPath: function () {
-        var path, node = this;
+        var path = "",
+            node = this;
         while (node.length) {
-            var realNode = node[0], name = realNode.localName;
-            if (!name) break;
-            name = name.toLowerCase();
-
-            var parent = node.parent();
-
-            var sameTagSiblings = parent.children(name);
-            if (sameTagSiblings.length > 1) { 
-                allSiblings = parent.children();
-                var index = allSiblings.index(realNode) + 1;
-                if (index > 1) {
-                    name += ':nth-child(' + index + ')';
-                }
+            var realNode = node[0],
+                name = realNode.localName,
+                id, classNameStr, currentNodeSelector;
+            if (!name) {
+                break;
             }
-            if(node.height >= MIN_ELEMENT_HEIGHT){
-                path = name + (path ? '>' + path : '');
+            currentNodeSelector = name.toLowerCase();
+            id = realNode.id;
+            if ( !! id) {
+                currentNodeSelector = currentNodeSelector + "#" + id;
             }
-            node = parent;
+            classNameStr = realNode.className;
+            if ( !! classNameStr) {
+                currentNodeSelector = currentNodeSelector + "." + classNameStr.split(/[\s\n]+/).join('.');
+            }
+            node = node.parent();
+            path = ">" + currentNodeSelector + path;
         }
-
-        return path;
+        return path.substr(1);
     }
 });

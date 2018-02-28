@@ -55,6 +55,8 @@ def start(args):
         print('no recording_name or tutorial_website given')
         return
 
+    atexit.register(on_exit)
+
     recording_name = args[1]
     tutorial_website = args[2]
 
@@ -74,12 +76,10 @@ def main():
         return
 
     if sys.argv[1] == 'start':
-        atexit.register(on_exit())
+        atexit.register(on_exit)
         start(sys.argv[1:])
     elif sys.argv[1] == 'clean':
         clean()
-    elif sys.argv[1] == 'debug':
-        debug()
 
 
 if __name__ == '__main__':

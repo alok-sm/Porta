@@ -9,13 +9,13 @@ from Commons.constants import logsDir
 from Commons import utils
 from Recorder.LoggingServer.server import LogServer
 from Recorder.ToolchainMonitor.shim_generator import generate_all_shims
+from Recorder.ToolchainMonitor.shim_generator import debug as shim_debug
 
 events = []
 recording_name = ''
 tutorial_website = ''
 
 
-@atexit.register
 def on_exit():
     global recording_name
     log_filepath = os.path.join(logsDir, '{}.json'.format(recording_name))
@@ -55,15 +55,25 @@ def start(args):
     log_server.start()
 
 
+def debug():
+    utils.setup_directories()
+    utils.setup_bashrc()
+    generate_all_shims()
+
+
 def main():
     if len(sys.argv) < 2:
         print('start / clean?')
         return
 
     if sys.argv[1] == 'start':
+        atexit.register(on_exit())
         start(sys.argv[1:])
     elif sys.argv[1] == 'clean':
+        atexit.register(on_exit())
         clean()
+    elif sys.argv[1] == 'debug':
+        debug()
 
 
 if __name__ == '__main__':

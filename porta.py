@@ -12,7 +12,10 @@ def main():
         recorder.start(sys.argv[1:])
     if sys.argv[1] == 'clean':
         recorder.clean()
+    if sys.argv[1] == 'debug':
+        recorder.debug()
 
 
 if __name__ == '__main__':
     main()
+

@@ -6,6 +6,8 @@ import json
 from threading import Thread
 from subprocess import Popen, PIPE
 import time
+
+import subprocess
 import urllib2  
 
 stdin_lines = []
@@ -13,9 +15,10 @@ stdout_lines = []
 stderr_lines = []
 
 original_bin = '%%original_binary%%'
+file_extensions = '%%file_extensions%%'
+
 cli_args = sys.argv[:]
 cli_args[0] = original_bin
-
 
 def copy_file_contents(src, dst, buffer):
     for line in src:
@@ -23,17 +26,19 @@ def copy_file_contents(src, dst, buffer):
         buffer.append(line_str)
         dst.write(line_str)
 
-def start_dtrace(pid):
-    cmd = 'sudo dtrace -s {script} -p {pid}'.format(
-        script=os.path.join(
-            os.path.dirname(os.path.realpath(__file__)), 
-            'open.dtrace'
-        ),
-        pid=str(pid)
-    )
-    return Popen(cmd, shell=True, stdout=PIPE)
 
-process = Popen('sleep 1; ' + ' '.join(cli_args), shell=True, stdin=PIPE, stdout=PIPE, stderr=PIPE)
+def get_code_files():
+    files = []
+    for extension in file_extensions:
+        files.extend(
+            subprocess.check_output(
+                ['find', '.', '-name', extension]
+            ).decode('ascii').split('\n')[:-1]
+        )
+
+    return {file:open(file).read() for file in files}
+
+process = Popen(cli_args, stdin=PIPE, stdout=PIPE, stderr=PIPE)
 
 threads = [
     Thread(target=copy_file_contents, args=(sys.stdin     , process.stdin, stdin_lines  )),
@@ -41,7 +46,6 @@ threads = [
     Thread(target=copy_file_contents, args=(process.stderr, sys.stderr   , stderr_lines ))
 ]
 
-dtrace_proc = start_dtrace(process.pid)
 
 for thread in threads:
     thread.start()
@@ -52,13 +56,17 @@ sys.stdin.close()
 
 unix_timestamp = time.time()
 
+time.sleep(1)
+
 log_line = json.dumps({
-    '_eventType': 'toolchainEvent', 
+    'pwd': os.getcwd(),
+    '_eventType': 'toolchainEvent',
     'command': cli_args,
-    'stdin': [line.strip() for line in stdin_lines],
-    'stdout': [line.strip() for line in stdout_lines],
-    'stderr': [line.strip() for line in stderr_lines],
+    'stdin': "".join(stdin_lines),
+    'stdout': "".join(stdout_lines),
+    'stderr': "".join(stderr_lines),
     'returnCode': return_code,
+    'files': get_code_files(),
     'timestamp': unix_timestamp
 })
 

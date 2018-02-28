@@ -1,3 +1,4 @@
+import json
 import os
 from os import listdir
 
@@ -7,10 +8,10 @@ from Commons.utils import clean_bashrc
 from Commons.constants import stubsDir
 from Commons.constants import stubsPath
 
-binaries_to_monitor = [
-    '/usr/bin/gcc',
-    '/usr/bin/javac'
-]
+binaries_file_extensions = {
+    '/usr/bin/gcc':["*.c", "*.h"],
+    '/usr/bin/javac':["*.java"]
+}
 
 template_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'shim_template.py')
 with open(template_filepath) as template_file:
@@ -37,11 +38,17 @@ def symlink_path(orig_path):
     return stub_path
 
 
-def generate_shim(binary):
+def generate_shim_code(binary, extensions):
+    return shim_template\
+        .replace("'%%original_binary%%'", json.dumps(binary))\
+        .replace("'%%file_extensions%%'", json.dumps(extensions))
+
+
+def generate_shim(binary, extensions):
     fakepath = get_fakepath(binary)
     os.system('rm {} > /dev/null 2> /dev/null'.format(fakepath))
     with open(fakepath, 'w') as shim_file:
-        shim_file.write(shim_template.replace('%%original_binary%%', binary))
+        shim_file.write(generate_shim_code(binary, extensions))
     os.system('chmod 755 {}'.format(fakepath))
 
 
@@ -55,14 +62,17 @@ def generate_all_shims():
         stubs_path.write(os.pathsep.join(new_paths))
 
     # set up scripts
-    for binary in binaries_to_monitor:
-        generate_shim(binary)
+    for binary, file_extensions in binaries_file_extensions.items():
+        generate_shim(binary, file_extensions)
 
 
 def main():
     clean_bashrc()
     setup_bashrc()
     generate_all_shims()
+
+def debug():
+    print(generate_shim_code('/usr/bin/gcc', ['.c', '.h']))
 
 
 if __name__ == '__main__':

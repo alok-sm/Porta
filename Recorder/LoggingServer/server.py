@@ -11,7 +11,6 @@ from Commons.constants import logserver_port
 
 events = []
 
-@atexit.register
 def at_exit():
     print(json.dumps(events, indent=4, sort_keys=True))
 
@@ -30,6 +29,7 @@ class LogServer:
             return jsonify({'status': 'success'})
 
     def start(self):
+        atexit.register(at_exit)
         self.flask_app.run(host=logserver_host, port=logserver_port, threaded=True)
 
 

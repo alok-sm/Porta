@@ -7,21 +7,9 @@ import sys
 import os
 
 
-def preprocess_log(raw_log):
-    events = raw_log['events']
-    for i, event in enumerate(events):
-        if not event['_eventType'] == 'mouseEnter':
-            reverse_events = events[i::-1] + events[-1:i:-1]
-            for revent in reverse_events:
-                if revent['_eventType'] == 'mouseEnter':
-                    event['cssPath'] = revent['cssPath']
-
-    return raw_log
-
-
 class ViewServer:
     def __init__(self, log):
-        self.log = preprocess_log(log)
+        self.log = log
         self.app = Flask(__name__)
         CORS(self.app)
 

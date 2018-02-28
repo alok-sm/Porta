@@ -15,15 +15,29 @@ recording_name = ''
 tutorial_website = ''
 
 
+def preprocess_log(raw_log):
+    events = raw_log['events']
+    for i, event in enumerate(events):
+        if not event['_eventType'] == 'mouseEnter':
+            reverse_events = events[i::-1] + events[-1:i:-1]
+            for revent in reverse_events:
+                if revent['_eventType'] == 'mouseEnter':
+                    event['cssPath'] = revent['cssPath']
+
+    return raw_log
+
+
 def on_exit():
     global recording_name
     log_filepath = os.path.join(logsDir, '{}.json'.format(recording_name))
+    log = preprocess_log({
+        'recording_name': recording_name,
+        'events': events,
+        'tutorial_website': tutorial_website
+    })
+
     with open(log_filepath, 'w') as log_file:
-        json.dump({
-            'recording_name': recording_name,
-            'events': events,
-            'tutorial_website': tutorial_website
-        }, log_file, indent=4, sort_keys=True)
+        json.dump(log, log_file, indent=4, sort_keys=True)
 
     clean()
 
@@ -63,7 +77,6 @@ def main():
         atexit.register(on_exit())
         start(sys.argv[1:])
     elif sys.argv[1] == 'clean':
-        atexit.register(on_exit())
         clean()
     elif sys.argv[1] == 'debug':
         debug()

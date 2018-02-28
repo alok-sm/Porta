@@ -46,13 +46,14 @@ def generate_extension_str(extensions):
     return' '.join(['--load-extension={}'.format(path) for path in extensions])
 
 
-def generate_chrome_cmd(url=None, extension_paths=None):
+def generate_chrome_cmd(url=None, extension_paths=None, args=None):
     if extension_paths is None: extension_paths = []
-    extension_str = generate_extension_str(extension_paths)
+    args_str = '' if args is None else ' '.join(args)
     url_str = '' if url is None else url
+    extension_str = generate_extension_str(extension_paths)
 
     chrome_cmd = '/Applications/Chromium.app/Contents/MacOS/Chromium ' \
-           '{} {} > /dev/null 2>/dev/null &'.format(url_str, extension_str)
+           '{} {} {} > /dev/null 2>/dev/null &'.format(url_str, extension_str, args_str)
     print(chrome_cmd)
 
     return chrome_cmd
@@ -76,4 +77,8 @@ def restart_chrome_with_viewer_extension(tutorial_website):
     extension_path = os.path.abspath(os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         '../Viewer/ChromeExtension'))
-    os.system(generate_chrome_cmd(url=tutorial_website, extension_paths=[extension_path]))
+    os.system(generate_chrome_cmd(
+        url=tutorial_website,
+        extension_paths=[extension_path],
+        args=['--disable-web-security', '--user-data-dir', '--allow-running-insecure-content']
+    ))

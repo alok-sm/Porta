@@ -9,11 +9,6 @@ from flask_cors import CORS
 from Commons.constants import logserver_host
 from Commons.constants import logserver_port
 
-events = []
-
-def at_exit():
-    print(json.dumps(events, indent=4, sort_keys=True))
-
 
 class LogServer:
     def __init__(self, events):
@@ -29,7 +24,6 @@ class LogServer:
             return jsonify({'status': 'success'})
 
     def start(self):
-        atexit.register(at_exit)
         self.flask_app.run(host=logserver_host, port=logserver_port, threaded=True)
 
 

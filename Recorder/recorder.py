@@ -9,7 +9,6 @@ from Commons.constants import logsDir
 from Commons import utils
 from Recorder.LoggingServer.server import LogServer
 from Recorder.ToolchainMonitor.shim_generator import generate_all_shims
-from Recorder.ToolchainMonitor.shim_generator import debug as shim_debug
 
 events = []
 recording_name = ''
@@ -49,16 +48,10 @@ def start(args):
     utils.setup_bashrc()
     generate_all_shims()
     utils.restart_bash()
-    utils.restart_chrome_with_extension(tutorial_website)
+    utils.restart_chrome_with_recorder_extension(tutorial_website)
 
     log_server = LogServer(events)
     log_server.start()
-
-
-def debug():
-    utils.setup_directories()
-    utils.setup_bashrc()
-    generate_all_shims()
 
 
 def main():

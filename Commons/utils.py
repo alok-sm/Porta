@@ -42,11 +42,16 @@ def stop_chrome():
     os.system('pkill -9 "Google Chrome"')
 
 
-def generate_chrome_cmd(url=None, extension_path=None):
-    extension_str = '' if extension_path is None else '--load-extension={}'.format(extension_path)
+def generate_extension_str(extensions):
+    return' '.join(['--load-extension={}'.format(path) for path in extensions])
+
+
+def generate_chrome_cmd(url=None, extension_paths=None):
+    if extension_paths is None: extension_paths = []
+    extension_str = generate_extension_str(extension_paths)
     url_str = '' if url is None else url
 
-    chrome_cmd = '/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome ' \
+    chrome_cmd = '/Applications/Chromium.app/Contents/MacOS/Chromium ' \
            '{} {} > /dev/null 2>/dev/null &'.format(url_str, extension_str)
     print(chrome_cmd)
 
@@ -58,9 +63,17 @@ def restart_chrome():
     os.system(generate_chrome_cmd())
 
 
-def restart_chrome_with_extension(tutorial_website):
+def restart_chrome_with_recorder_extension(tutorial_website):
     stop_chrome()
     extension_path = os.path.abspath(os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         '../Recorder/BrowserMonitor'))
-    os.system(generate_chrome_cmd(url=tutorial_website, extension_path=extension_path))
+    os.system(generate_chrome_cmd(url=tutorial_website, extension_paths=[extension_path]))
+
+
+def restart_chrome_with_viewer_extension(tutorial_website):
+    stop_chrome()
+    extension_path = os.path.abspath(os.path.join(
+        os.path.dirname(os.path.realpath(__file__)),
+        '../Viewer/ChromeExtension'))
+    os.system(generate_chrome_cmd(url=tutorial_website, extension_paths=[extension_path]))

@@ -21,14 +21,19 @@ function getSlideHigh(){
 }
 
 
-function createHeatmapElement(top, height, r, g, b, a){
+function createHeatmapElement(top, height, color){
     var classStr = 'porta-element heatmap-block';
-    var colorStr = 'rgba('+r+','+g+','+b+','+a+')'
-    var styleStr = 'top:' + top + 'px;' + 'height:' + height + 'px;' + 'background:' + colorStr + ';';
+    var styleStr = 'top:' + top + 'px;' + 'height:' + height + 'px;' + 'background:' + color + ';';
 
     $('body').append(
         '<div class="' + classStr + '" style="' + styleStr + '"></div>'
     );
+}
+
+
+function createHeatmapElementRGBA(top, height, r, g, b, a){
+    var colorStr = 'rgba('+r+','+g+','+b+','+a+')'
+    createHeatmapElement(top, height, colorStr);
 }
 
 function getKeyWithMaxValue(obj){
@@ -59,25 +64,55 @@ function normalizeHeatmapIntensities(blocks){
     return newBlocks
 }
 
+function heatMapColorforValue(value){
+  var h = (1.0 - value) * 240
+  return "hsla(" + h + ", 100%, 50%, 0.7)";
+}
+
+
 function renderHeatmap(){
     $('.heatmap-block').remove();
     primaryHeatmapBlocks = normalizeHeatmapIntensities(primaryHeatmapBlocks)
     secondaryHeatmapBlocks = normalizeHeatmapIntensities(secondaryHeatmapBlocks)
     var primaryIntensity, secondaryIntensity;
-    var primaryScale = 0.5
-    var secondaryScale = 0.7
+    var primaryScale = 0.6;
+    var secondaryScale = 0.4;
+    var totals = []
+    for (var y = getSlideLow(); y < getSlideHigh(); y += heatmapBlockHeight) {
+        var primaryIntensity = primaryHeatmapBlocks[y];
+        var primaryIntensity = (primaryIntensity === undefined)? 0: primaryIntensity;
+
+        var secondaryIntensity = secondaryHeatmapBlocks[y];
+        var secondaryIntensity = (secondaryIntensity === undefined)? 0: secondaryIntensity;
+        var total = primaryScale * primaryIntensity + secondaryScale * secondaryIntensity;
+        // var color = heatMapColorforValue(
+        //     );
+
+        // createHeatmapElement(y, heatmapBlockHeight, color);
+        totals.push(total);
+    }    
+
+    var maxTotal = Math.max.apply(null, totals);
+    var i = 0;
 
     for (var y = getSlideLow(); y < getSlideHigh(); y += heatmapBlockHeight) {
-        // console.log(y)
-        primaryIntensity = primaryHeatmapBlocks[y];
-        primaryIntensity = (primaryIntensity === undefined)? 0: primaryIntensity;
-
-        secondaryIntensity = secondaryHeatmapBlocks[y];
-        secondaryIntensity = (secondaryIntensity === undefined)? 0: secondaryIntensity;
-
-        createHeatmapElement(y, heatmapBlockHeight, 255, 0, 0, primaryIntensity * primaryScale);
-        createHeatmapElement(y, heatmapBlockHeight, 0, 255, 0, secondaryIntensity * secondaryScale);
+        var color = heatMapColorforValue(totals[i] / maxTotal);
+        createHeatmapElement(y, heatmapBlockHeight, color);
+        i++;
     }
+
+
+    // for (var y = getSlideLow(); y < getSlideHigh(); y += heatmapBlockHeight) {
+    //     // console.log(y)
+    //     primaryIntensity = primaryHeatmapBlocks[y];
+    //     primaryIntensity = (primaryIntensity === undefined)? 0: primaryIntensity;
+
+    //     secondaryIntensity = secondaryHeatmapBlocks[y];
+    //     secondaryIntensity = (secondaryIntensity === undefined)? 0: secondaryIntensity;
+
+    //     createHeatmapElementRGBA(y, heatmapBlockHeight, 255, 0, 0, primaryIntensity * primaryScale);
+    //     createHeatmapElementRGBA(y, heatmapBlockHeight, 0, 255, 0, secondaryIntensity * secondaryScale);
+    // }
 }
 
 function createPrimaryHeatmapElement(element){

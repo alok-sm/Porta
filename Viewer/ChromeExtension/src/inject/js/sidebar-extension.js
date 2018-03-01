@@ -85,10 +85,6 @@ function renderHeatmap(){
         var secondaryIntensity = secondaryHeatmapBlocks[y];
         var secondaryIntensity = (secondaryIntensity === undefined)? 0: secondaryIntensity;
         var total = primaryScale * primaryIntensity + secondaryScale * secondaryIntensity;
-        // var color = heatMapColorforValue(
-        //     );
-
-        // createHeatmapElement(y, heatmapBlockHeight, color);
         totals.push(total);
     }    
 
@@ -100,19 +96,6 @@ function renderHeatmap(){
         createHeatmapElement(y, heatmapBlockHeight, color);
         i++;
     }
-
-
-    // for (var y = getSlideLow(); y < getSlideHigh(); y += heatmapBlockHeight) {
-    //     // console.log(y)
-    //     primaryIntensity = primaryHeatmapBlocks[y];
-    //     primaryIntensity = (primaryIntensity === undefined)? 0: primaryIntensity;
-
-    //     secondaryIntensity = secondaryHeatmapBlocks[y];
-    //     secondaryIntensity = (secondaryIntensity === undefined)? 0: secondaryIntensity;
-
-    //     createHeatmapElementRGBA(y, heatmapBlockHeight, 255, 0, 0, primaryIntensity * primaryScale);
-    //     createHeatmapElementRGBA(y, heatmapBlockHeight, 0, 255, 0, secondaryIntensity * secondaryScale);
-    // }
 }
 
 function createPrimaryHeatmapElement(element){

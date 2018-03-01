@@ -17,5 +17,6 @@
 }
 
 #slider{
+    left: 4px;
     flex: 1;
 }

@@ -184,8 +184,16 @@ function renderSidebar(){
 
 function sendMessageToMain(message){
     getContentWindow('porta-body').postMessage(
-        {message: message, namespace: 'porta'}, 
+        {message: message, namespace: 'porta', to: 'main'}, 
         getContentWindow('porta-body').location.href
+    );
+}
+
+
+function sendMessageToBottombar(message){
+    getContentWindow('porta-bottombar').postMessage(
+        {message: message, namespace: 'porta', to: 'bottombar'}, 
+        getContentWindow('porta-bottombar').location.href
     );
 }
 
@@ -196,10 +204,20 @@ function onMessageFromMain(message){
     }
 }
 
+function onMessageFromBottombar(message){
+    console.log('onMessageFromBottombar', message);
+}
+
 window.addEventListener('message', function(event){
-    if(event.source.location.href !== getContentWindow('porta-sidebar').location.href){
+    if(event.source.location.href === getContentWindow('porta-body').location.href){
         if(event.data.namespace && event.data.namespace === 'porta'){
             onMessageFromMain(event.data.message);
+        }
+    }
+
+    if(event.source.location.href === getContentWindow('porta-bottombar').location.href){
+        if(event.data.namespace && event.data.namespace === 'porta'){
+            onMessageFromBottombar(event.data.message);
         }
     }
 }, false);

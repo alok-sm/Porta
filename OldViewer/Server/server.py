@@ -6,6 +6,7 @@ import json
 import sys
 import os
 
+
 class ViewServer:
     def __init__(self, log):
         self.log = log

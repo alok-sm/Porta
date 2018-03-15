@@ -1,0 +1,31 @@
+<nav class="navbar navbar-default navbar-fixed-bottom">
+    <div class="slider" id="porta-bottombar"></div>
+</nav>
+<div id="fake-body">
+    <div class="slider" id="porta-sidebar">
+        <div id="positional-slider"></div>
+        <div id="positional-heatmap">
+            
+            <div 
+                ng-repeat="block in positionalHeatmapBlocks" 
+                class="positional-heatmap-block" 
+                style="{{visualizationHelper.spatial.generateHeatmapStyleString(block[0], block[1])}}"></div>
+
+            <img
+                class="event-tooltip"
+                ng-repeat="tooltip in eventTooltips"
+                ng-src="{{$sce.trustAsResourceUrl(tooltip.icon)}}"
+                event="{{tooltip.event}}"
+                style="top:{{tooltip.y}}px;"></img>
+
+
+        </div>
+    </div>
+    <iframe 
+        scrolling="no"
+        frameborder="no" 
+        id="porta-body" 
+        ng-src="{{$sce.trustAsResourceUrl(iframeSrc)}}"
+        ng-onload="onIframeLoad()">></iframe>
+</div>
+<div id="bottom-offset"></div>

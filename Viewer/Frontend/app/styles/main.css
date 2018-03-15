@@ -1,0 +1,57 @@
+.ng-scope{
+    /*height: calc(100%);*/
+}
+
+#porta-sidebar {
+    float: left;
+    border-right: 1px solid #bbb;
+
+    width: 50px;
+}
+
+#porta-body {
+    width: calc(100% - 50px);
+}
+
+#fake-body {
+    width: 100%;
+    display: flex;
+    height: calc(100% - 50px);
+}
+
+#porta-bottombar {
+    width: 100%;
+    height: 50px;
+}
+
+.navbar-default {
+    background-color: white;
+    border-top: 1px solid #bbb;
+}
+
+#bottom-offset{
+    width: 100%;
+    height: 50px;
+}
+
+#positional-slider{
+    height: 100%;
+    width: 20px;
+    display: inline-block;
+}
+
+#positional-heatmap{
+    height: 100%;
+    width: 20px;
+    display: inline-block;
+}
+
+.event-tooltip{
+    z-index: 100 !important;
+    display: block;
+    position: absolute;
+    height: 20px;
+    width: 20px;
+    left:25px;
+    cursor: pointer;
+}

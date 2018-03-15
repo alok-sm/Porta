@@ -12,10 +12,15 @@
     {
       "all_frames": true,
       "matches": ["<all_urls>"],
-      "css": [],
+      "css": [
+        "src/inject/css/jquery-ui.css"
+      ],
       "js": [
-        "src/inject/js/iframeResizer.contentWindow.min.js",
         "src/inject/js/jquery.js",
+        "src/inject/js/jquery-ui.js",
+        "src/inject/js/gaussian.js",
+        "src/inject/js/sidebar-extension.js",
+        "src/inject/js/bottombar-extension.js",
         "src/inject/js/main-extension.js",
         "src/inject/js/iframe.js"
       ]

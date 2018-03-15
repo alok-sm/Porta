@@ -1,9 +1,9 @@
 function mainOnLoad(){}
 
-function sendMessageToParent(message){
-    window.top.postMessage(
+function sendMessageToSidebar(message){
+    getContentWindow('porta-sidebar').postMessage(
         {message: message, namespace: 'porta'}, 
-        window.top.location.href
+        getContentWindow('porta-sidebar').location.href
     );
 }
 
@@ -15,7 +15,7 @@ function getBounds(data){
         height: bounds.height,
         width: bounds.width
     }
-    sendMessageToParent(data);
+    sendMessageToSidebar(data);
 }
 
 function onMessageFromSidebar(message){
@@ -26,7 +26,7 @@ function onMessageFromSidebar(message){
 
 window.addEventListener('message', function(event){
     if(event.source.location.href !== getContentWindow('porta-body').location.href){
-        if(event.data.namespace === 'porta'){
+        if(event.data.namespace === 'porta' && event.data.to === 'main'){
             onMessageFromSidebar(event.data.message);
         }
     }

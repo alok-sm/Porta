@@ -19,6 +19,21 @@ function iframeIsLoaded(id) {
     
 }
 
+
+function onIframeLoad(){
+    if(isInFrameWithId('porta-sidebar') && sidebarOnLoad){
+        sidebarOnLoad();
+    }
+
+    if(isInFrameWithId('porta-body') && mainOnLoad){
+        mainOnLoad();
+    }
+
+    if(isInFrameWithId('porta-bottombar') && bottombarOnLoad){
+        bottombarOnLoad();
+    }
+}
+
 function inIframe () {
     try {
         var stat = window.self !== window.top;
@@ -35,12 +50,13 @@ chrome.extension.sendMessage({ignore: true}, function(response) {
     var readyStateCheckInterval = setInterval(function() {
         if (document.readyState === 'complete' &&
             iframeIsLoaded('porta-body') && 
-            getContentWindow('porta-body').location.href !== 'about:blank'){
-                if(isInFrameWithId('porta-body') && mainOnLoad){
-                    mainOnLoad();
-                }
+            getContentWindow('porta-body').location.href !== 'about:blank' &&
+            iframeIsLoaded('porta-sidebar')){
+                onIframeLoad();
                 clearInterval(readyStateCheckInterval);
         }
     }, 100);
 });
+
+
 

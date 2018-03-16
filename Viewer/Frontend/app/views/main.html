@@ -1,18 +1,15 @@
-<nav class="navbar navbar-default navbar-fixed-bottom">
-    <div class="slider" id="porta-bottombar"></div>
-</nav>
 <div id="fake-body">
-    <div class="slider" id="porta-sidebar">
+    <div id="porta-sidebar">
         <div id="positional-slider"></div>
         <div id="positional-heatmap">
             
             <div 
                 ng-repeat="block in positionalHeatmapBlocks" 
-                class="positional-heatmap-block" 
+                class="spatial-heatmap-block"
                 style="{{visualizationHelper.spatial.generateHeatmapStyleString(block[0], block[1])}}"></div>
 
             <img
-                class="event-tooltip"
+                class="event-tooltip-spatial"
                 ng-repeat="tooltip in eventTooltips"
                 ng-src="{{$sce.trustAsResourceUrl(tooltip.icon)}}"
                 event="{{tooltip.event}}"
@@ -29,3 +26,22 @@
         ng-onload="onIframeLoad()">></iframe>
 </div>
 <div id="bottom-offset"></div>
+
+<nav class="navbar navbar-default navbar-fixed-bottom">
+    <div id="porta-bottombar">
+        <div id="temporal-heatmap">
+            <div 
+                ng-repeat="block in temporalHeatmapBlocks"
+                class="temporal-heatmap-block"
+                style="{{visualizationHelper.temporal.generateHeatmapStyleString(block[0], block[1])}}"></div>
+            <img
+                class="event-tooltip-temporal"
+                ng-repeat="tooltip in eventTooltips"
+                ng-src="{{$sce.trustAsResourceUrl(tooltip.icon)}}"
+                event="{{tooltip.event}}"
+                style="left:{{tooltip.x}}px;"></img>
+
+        </div>
+        <div id="temporal-slider"></div>
+    </div>
+</nav>

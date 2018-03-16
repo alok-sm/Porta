@@ -17,7 +17,6 @@ function sendMessageToMain(message){
 
 angular.module('viewerApp')
 .controller('MainCtrl', function ($scope, $window, $http, $sce, visualizationHelper){
-    $scope.gaussianModel = window.gaussian(window.innerHeight/2, 20000);
     $scope.visualizationHelper = visualizationHelper;
     $scope.$sce = $sce;
 
@@ -71,16 +70,17 @@ angular.module('viewerApp')
 
         visualizationHelper.spatial.calculateBlockRawValues(
             $scope.events, 
-            $scope.gaussianModel,
             $scope.positionalPrimaryHeatmapBlocks,
             $scope.positionalSecondaryHeatmapBlocks
+        );
+
+        $scope.rawTemporalHeatmapBlocks = visualizationHelper.temporal.calculateBlockRawValues(
+            $scope.events
         );
 
         $scope.rawEventTooltips = visualizationHelper.generateRawEventTooltips(
             $scope.events
         );
-
-        console.log($scope.rawEventTooltips);
 
         renderVisualization();
     }
@@ -100,6 +100,14 @@ angular.module('viewerApp')
             $scope.startTimeSlider,
             $scope.endTimeSlider
         );
+
+        $scope.temporalHeatmapBlocks = visualizationHelper.temporal.calculateHeatmapBlocks(
+            $scope.rawTemporalHeatmapBlocks,
+            $scope.startTimeSlider,
+            $scope.endTimeSlider
+        );
+
+        console.log($scope.temporalHeatmapBlocks);
 
         $scope.$apply();
     }

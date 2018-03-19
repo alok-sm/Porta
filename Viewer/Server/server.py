@@ -25,7 +25,7 @@ class ViewServer:
             return jsonify(log['events'])
 
     def start(self):
-        self.app.run(host='0.0.0.0', port=3000, debug=True)
+        self.app.run(host='0.0.0.0', port=3000, threaded=True)
 
 
 def main():

@@ -64,8 +64,7 @@ def start(args):
     utils.setup_bashrc()
     generate_all_shims()
     utils.restart_bash()
-    utils.restart_chrome_with_recorder_extension(tutorial_website)
-
+    os.system('/Applications/Chromium.app/Contents/MacOS/Chromium "{}" --profile-directory="Profile 2"'.format(tutorial_website))
     log_server = LogServer(events, tutorial_website)
     log_server.start()
 

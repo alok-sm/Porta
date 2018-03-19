@@ -8,6 +8,7 @@ from Viewer.Server.server import ViewServer
 def view(args):
     path = os.path.expanduser('~/.portaLogs/{}.json'.format(sys.argv[2]))
     raw_log = json.load(open(path))
-    utils.restart_chrome_with_viewer_extension("http://localhost:3000/static/main/index.html")
+    os.system('/Applications/Chromium.app/Contents/MacOS/Chromium --no-startup-window --profile-directory="Profile 1"')
+    os.system('source ~/.bashrc; tab ~/dev/HciResearch/Porta/Viewer/Frontend/ grunt serve')
     view_server = ViewServer(raw_log)
     view_server.start()

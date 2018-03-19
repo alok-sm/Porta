@@ -66,7 +66,7 @@ def start(args):
     utils.restart_bash()
     utils.restart_chrome_with_recorder_extension(tutorial_website)
 
-    log_server = LogServer(events)
+    log_server = LogServer(events, tutorial_website)
     log_server.start()
 
 

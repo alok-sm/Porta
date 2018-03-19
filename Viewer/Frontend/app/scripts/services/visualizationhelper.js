@@ -10,6 +10,12 @@ angular.module('viewerApp')
             devtoolsOpen: '/images/icons/clipboard.png',
             tabsChange: '/images/icons/clipboard.png'
         },
+        eventNames: {
+            toolchainEvent:  'Tool Chain',
+            selectionChange: 'Clipboard',
+            devtoolsOpen: 'Open Developer Tools',
+            tabsChange: 'Open a new tab'
+        },
         spatial: {
             heatmapBlockHeight: 10,
             gaussianModel: window.gaussian(window.innerHeight/4, 20000)
@@ -44,12 +50,22 @@ angular.module('viewerApp')
         }
     };
 
-    helper.spatial.calculateBlockRawValues = function(events, primaryHeatmapBlocks, secondaryHeatmapBlocks){
+    helper.spatial.calculateBlockRawValues = function(events, temporalRange, primaryHeatmapBlocks, secondaryHeatmapBlocks){
+        var endTime = events[events.length - 1].timestamp;
+        var startTime = events[0].timestamp;
+
         for(var i = 0; i < events.length; i++){
-            if(events[i]._eventType === 'mouseEnter'){
-                helper.spatial.createPrimaryHeatmapElement(events[i], primaryHeatmapBlocks);
-            }else if(events[i]._eventType === 'scrollEnd'){
-                helper.spatial.createSecondaryHeatmapElement(events[i], secondaryHeatmapBlocks);
+            var event = events[i];
+            var timePx = document.body.scrollWidth * (event.timestamp - startTime) / (endTime - startTime);
+
+            if(timePx < temporalRange[0] || temporalRange[1] < timePx){
+                continue;
+            }
+
+            if(event._eventType === 'mouseEnter'){
+                helper.spatial.createPrimaryHeatmapElement(event, primaryHeatmapBlocks);
+            }else if(event._eventType === 'scrollEnd'){
+                helper.spatial.createSecondaryHeatmapElement(event, secondaryHeatmapBlocks);
             }
         }
     };
@@ -57,7 +73,7 @@ angular.module('viewerApp')
     helper.getKeyWithMaxValue = function(obj, low, high){
         var maxVal = 0, maxKey;
         for(var key in obj){
-            if(key < low || key > high){
+            if(parseInt(key) < low || parseInt(key) > high){
                 continue;
             }
             if(obj[key] > maxVal){
@@ -82,15 +98,18 @@ angular.module('viewerApp')
       return `hsla(${(1.0 - value) * 240}, 100%, 50%, 0.7)`;
     };
 
-    helper.spatial.calculateHeatmapBlocks = function(primaryHeatmapBlocks, secondaryHeatmapBlocks, low, high){
+    helper.spatial.calculateHeatmapBlocks = function(primaryHeatmapBlocks, secondaryHeatmapBlocks, spatialRange){
+        var low = spatialRange[0];
+        var high = spatialRange[1];
         primaryHeatmapBlocks = helper.spatial.normalizeHeatmapIntensities(primaryHeatmapBlocks, low, high);
         secondaryHeatmapBlocks = helper.spatial.normalizeHeatmapIntensities(secondaryHeatmapBlocks, low, high);
         var primaryScale = 0.6;
         var secondaryScale = 0.4;
         var totals = [];
         var finalBlocks = [];
+        var blankPosition = Math.ceil(low / 10) * 10;
 
-        for(var y = low; y < high; y += helper.spatial.heatmapBlockHeight){
+        for(var y = blankPosition; y < high; y += helper.spatial.heatmapBlockHeight){
             var primaryIntensity = primaryHeatmapBlocks[y];
             primaryIntensity = (primaryIntensity === undefined)? 0: primaryIntensity;
 
@@ -103,7 +122,11 @@ angular.module('viewerApp')
         var maxTotal = Math.max.apply(null, totals);
         var i = 0;
 
-        for(y = low; y < high; y += helper.spatial.heatmapBlockHeight){
+        for(y = 0; y < blankPosition; y += helper.spatial.heatmapBlockHeight){
+            finalBlocks.push([y, 'rgb(255, 255, 255)']);
+        }
+
+        for(y = blankPosition; y < high; y += helper.spatial.heatmapBlockHeight){
             var color = helper.heatMapColorforValue(totals[i] / maxTotal);
             finalBlocks.push([y, color]);
             i++;
@@ -121,7 +144,7 @@ angular.module('viewerApp')
     helper.temporal.generateHeatmapStyleString = function(y, color){
         return  `margin-left: ${y}px; ` + 
                 `width: ${helper.temporal.heatmapBlockWidth}px; ` + 
-                `background: ${color};`
+                `background: ${color};`;
     };
 
     helper.generateRawEventTooltips = function(events){
@@ -135,7 +158,8 @@ angular.module('viewerApp')
             }
 
             toolTips.push({
-                event: window.encodeURI(JSON.stringify(events[i])),
+                serializedEvent: window.encodeURI(JSON.stringify(events[i])),
+                event: events[i],
                 x: document.body.scrollWidth * (events[i].timestamp - startTime) / (endTime - startTime),
                 y: events[i].bounds.y + (events[i].bounds.height - 20) / 2,
                 icon: helper.tooltipIconMapping[events[i]._eventType]
@@ -145,54 +169,78 @@ angular.module('viewerApp')
         return toolTips;
     };
 
-    helper.filterTooltips = function(toolTips, startPositionSlider, endPositionSlider, startTimeSlider, endTimeSlider){
-        return toolTips;
-    };
+    helper.filterTooltips = function(toolTips, spatialRange, temporalRange, eventCategoriesArray){
+        var eventCategories = {};
 
-    helper.temporal.calculateBlockRawValues = function(events){
-        var endTime = events[events.length - 1].timestamp;
-        var startTime = events[0].timestamp;
+        for (var i = 0; i < eventCategoriesArray.length; i++) {
+            var category = eventCategoriesArray[i];
+            eventCategories[category[0]] = category[1];
+        }
+        // debugger;
+        var filtered = [];
 
-        var positions = []
+        for (i = 0; i < toolTips.length; i++) {
+            var toolTip = toolTips[i];
 
-        for(var i = 0; i < events.length; i++){
-            if(helper.nonActionableEvents.includes(events[i]._eventType)){
+            if(! eventCategories[toolTip.event._eventType]){
                 continue;
             }
-            positions.push(
-                document.body.scrollWidth * (events[i].timestamp - startTime) / (endTime - startTime)
-            );
+
+            if(toolTip.x < temporalRange[0] || temporalRange[1] < toolTip.x){
+                continue;
+            }
+
+            if(toolTip.y < spatialRange[0] || spatialRange[1] < toolTip.y){
+                continue;
+            }
+
+            filtered.push(toolTip);
         }
 
-        var heatmapBlocks = {}
+        return filtered;
+    };
 
-        for (var i = 0; i < positions.length; i++) {
+    helper.temporal.calculateHeatmapBlocks = function(events, eventTooltips, range){
+        var lastEventTime = events[events.length - 1].timestamp;
+        var firstEventTime = events[0].timestamp;
 
-            for(var x = 0; x < document.body.scrollWidth; x += helper.temporal.heatmapBlockWidth){
-                var heatmapIncrement = helper.temporal.gaussianModel.pdf(x - positions[i]);
+        var positions = [];
 
-                if(heatmapBlocks[x] !== undefined){
-                    heatmapBlocks[x] += heatmapIncrement;
-                }else{
-                    heatmapBlocks[x] =  heatmapIncrement;
-                }
+        for(var i = 0; i < eventTooltips.length; i++){
+
+            var tooltipPosition = document.body.scrollWidth * (eventTooltips[i].event.timestamp - firstEventTime) / (lastEventTime - firstEventTime);
+
+            if(range[0] <= tooltipPosition && tooltipPosition <= range[1]){
+                positions.push(tooltipPosition);    
             }
         }
 
-        return heatmapBlocks;
-    }
+        var heatmapBlocks = {};
 
-    helper.temporal.calculateHeatmapBlocks = function(heatmapBlocks, startTime, endTime){
+        for(var x = 0; x < document.body.scrollWidth; x += helper.temporal.heatmapBlockWidth){
+            heatmapBlocks[x] = 0;
+        }
+
+        for (i = 0; i < positions.length; i++) {
+            for(x = 0; x < document.body.scrollWidth; x += helper.temporal.heatmapBlockWidth){
+                heatmapBlocks[x] += helper.temporal.gaussianModel.pdf(x - positions[i]);
+            }
+        }
+ 
         var blocks = [];
         var maxKey = helper.getKeyWithMaxValue(heatmapBlocks);
 
         for(var key in heatmapBlocks){
-            var value = heatmapBlocks[key] / heatmapBlocks[maxKey]
-            blocks.push([key, helper.heatMapColorforValue(value)]);
+            if(range[0] <= key && key <= range[1]){
+                var value = heatmapBlocks[key] / heatmapBlocks[maxKey];
+                blocks.push([key, helper.heatMapColorforValue(value)]);
+            }else{
+                blocks.push([key, 'rgb(255, 255, 255)']);
+            }
         }
 
         return blocks;
-    }
+    };
 
     return helper;
 });

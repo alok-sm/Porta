@@ -25,6 +25,11 @@ angular
         controller: 'MainCtrl',
         controllerAs: 'main'
       })
+      .when('/popup', {
+        templateUrl: 'views/popup.html',
+        controller: 'PopupCtrl',
+        controllerAs: 'popup'
+      })
       .otherwise({
         redirectTo: '/'
       });

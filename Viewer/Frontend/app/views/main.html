@@ -1,10 +1,11 @@
 <div id="fake-body">
     <div id="porta-sidebar">
-        <div id="positional-slider"></div>
+        <div id="positional-slider-container">
+            <div id="spatial-slider"></div>
+        </div>
         <div id="positional-heatmap">
-            
             <div 
-                ng-repeat="block in positionalHeatmapBlocks" 
+                ng-repeat="block in spatialHeatmapBlocks" 
                 class="spatial-heatmap-block"
                 style="{{visualizationHelper.spatial.generateHeatmapStyleString(block[0], block[1])}}"></div>
 
@@ -12,10 +13,9 @@
                 class="event-tooltip-spatial"
                 ng-repeat="tooltip in eventTooltips"
                 ng-src="{{$sce.trustAsResourceUrl(tooltip.icon)}}"
-                event="{{tooltip.event}}"
+                ng-click="tooltipClick($event)"
+                event="{{tooltip.serializedEvent}}"
                 style="top:{{tooltip.y}}px;"></img>
-
-
         </div>
     </div>
     <iframe 
@@ -24,6 +24,21 @@
         id="porta-body" 
         ng-src="{{$sce.trustAsResourceUrl(iframeSrc)}}"
         ng-onload="onIframeLoad()">></iframe>
+
+    <div id="filters-container">
+        <div id="filters">
+            <h3>Filter events</h3>
+            <p ng-repeat="category in eventCategories">
+                <label>
+                    <input 
+                        type="checkbox"
+                        ng-model="category[1]" 
+                        ng-change="categoryChange()"
+                        checklist-value="1"> {{eventNames[category[0]]}}
+                </label>
+            </p>
+        </div>
+    </div>
 </div>
 <div id="bottom-offset"></div>
 
@@ -42,6 +57,8 @@
                 style="left:{{tooltip.x}}px;"></img>
 
         </div>
-        <div id="temporal-slider"></div>
+        <div id="temporal-slider-container">
+            <div id="temporal-slider"></div>
+        </div>
     </div>
 </nav>

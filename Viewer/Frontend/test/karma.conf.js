@@ -33,6 +33,8 @@ module.exports = function(config) {
       'bower_components/iframe-resizer/js/iframeResizer.contentWindow.js',
       'bower_components/ng-onload/release/ng-onload.min.js',
       'bower_components/gaussian/lib/gaussian.js',
+      'bower_components/jquery-ui/jquery-ui.js',
+      'bower_components/bootbox.js/bootbox.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',

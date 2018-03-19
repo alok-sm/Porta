@@ -83,5 +83,3 @@ function onDevtoolsOpen(){
         _eventType: 'devtoolsOpen'
     })
 }
-
-console.log('hello');

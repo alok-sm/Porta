@@ -15,3 +15,4 @@ with open(sys.argv[1]) as log_file:
 
     for event_type in event_types:
         print len([ event for event in log['events'] if event['_eventType'] == event_type ]),
+        

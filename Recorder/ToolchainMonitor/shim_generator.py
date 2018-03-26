@@ -10,7 +10,8 @@ from Commons.constants import stubsPath
 
 binaries_file_extensions = {
     '/usr/bin/gcc':["*.c", "*.h"],
-    '/usr/bin/javac':["*.java"]
+    '/usr/bin/javac':["*.java"],
+    '/usr/bin/python': ['*.py']
 }
 
 template_filepath = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'shim_template.py')

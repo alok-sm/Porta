@@ -12,18 +12,34 @@ function sendMessageToMain(message){
 }
 
 angular.module('viewerApp')
-.controller('MainCtrl', function ($scope, $window, $http, $sce, $routeParams, visualizationHelper){
+.controller('AggregateCtrl', function ($scope, $window, $http, $sce, $routeParams, visualizationHelper) {
     $scope.visualizationHelper = visualizationHelper;
     $scope.$sce = $sce;
-    $scope.logName = $routeParams.logName
 
-    function api(path){
-        return `http://localhost:3000/${$scope.logName}/${path}`;
+    $scope.logNames = $routeParams.logNames.split(',');
+
+    // debugger;
+    
+    var logColorsRaw = window.randomColor({
+        format: 'rgb',
+        count: $scope.logNames.length
+    })
+
+    $scope.logColors = {}
+
+    for (var i = 0; i < logColorsRaw.length; i++) {
+        $scope.logColors[$scope.logNames[i]] = logColorsRaw[i];
+    }
+
+    console.log($scope.logColors);
+
+    function api(name, path){
+        return `http://localhost:3000/${name}/${path}`;
     }
 
     function initialize(){
         $window.addEventListener('message', messageHandler); 
-        $http.get(api('url')).then(onGetUrl);
+        $http.get(api($scope.logNames[0], 'url')).then(onGetUrl);
     }
 
     function onGetUrl(response){
@@ -31,20 +47,27 @@ angular.module('viewerApp')
     }
 
     $scope.onIframeLoad = function(){
-        // window.iFrameResize();
         sendMessageToMain({action: 'getHeight'});
     };
 
-    function onGetLog(response){
-        // subtract 50 for bottom bar height
+    function getLogs(){
+        $scope.rawEvents = {};
+        for (var i = 0; i < $scope.logNames.length; i++) {
+            console.log(i)
+            $http.get(api($scope.logNames[i], 'dump')).then(function(response){
+                $scope.rawEvents[response.data.recording_name] = response.data.events;
+                if(Object.keys($scope.rawEvents).length === $scope.logNames.length){
+                    setupSlider()
+                }
+            });
+        }
+    }
+
+    function setupSlider(){
+
         var maxSpatialSlider = document.body.scrollHeight - 50;
-        var maxTemporalSlider = document.body.scrollWidth;
-
         $scope.spatialSliderValues = [0, maxSpatialSlider];
-        $scope.temporalSliderValues = [0, maxTemporalSlider];
-
         var maxSlider = 10000;
-
         window.jQuery('#spatial-slider').slider({
             orientation: 'vertical',
             range: true,
@@ -60,22 +83,6 @@ angular.module('viewerApp')
                 waitAndRerender();
             }
         });
-
-        window.jQuery('#temporal-slider').slider({
-            range: true,
-            min: 0,
-            max: maxSlider,
-            values: [0, maxSlider],
-            slide: function( event, ui ) {
-                $scope.temporalSliderValues = [
-                    Math.floor(maxTemporalSlider * (ui.values[0]) / maxSlider),
-                    Math.ceil(maxTemporalSlider * (ui.values[1]) / maxSlider)
-                ];
-
-                waitAndRerender();
-            }
-        });
-
         var timer;
 
         function waitAndRerender(){
@@ -87,17 +94,28 @@ angular.module('viewerApp')
             }, 200);
         }
 
-        $scope.rawEvents = response.data;
-
         getBounds();
     }
 
     function getBounds(){
-        $scope.events = [];
-        for(var i = 0; i < $scope.rawEvents.length; i++){
-            sendMessageToMain({action: 'getBounds', data: $scope.rawEvents[i]});
+        $scope.eventDict = {};
+
+        $scope.totalRawEvents = 0;
+        $scope.totalBoundedEvents = 0;
+
+        for(var logName in $scope.rawEvents){
+            $scope.totalRawEvents += $scope.rawEvents[logName].length;
+        }
+
+        for(var logName in $scope.rawEvents){
+            for (var i = 0; i < $scope.rawEvents[logName].length; i++) {
+                var event = $scope.rawEvents[logName][i];
+                event.logName = logName;
+                sendMessageToMain({action: 'getBounds', data: event});
+            }
         }
     }
+
 
     function messageHandler(event){
         if(event.data.namespace !== 'porta'){
@@ -105,40 +123,56 @@ angular.module('viewerApp')
         }
 
         if(event.data.action === 'setBounds'){
-            $scope.events.push(event.data.message);
+            var logEvent = event.data.message;
+            $scope.totalBoundedEvents ++;
+            if(!$scope.eventDict[logEvent.logName]){
+                $scope.eventDict[logEvent.logName] = [];
+            }
+            $scope.eventDict[logEvent.logName].push(logEvent);
 
-            if($scope.events.length === $scope.rawEvents.length){
+            if($scope.totalBoundedEvents === $scope.totalRawEvents){
                 initializeVisualization();
             }
         }else if(event.data.action === 'setHeight'){
             $('iframe').css({height: event.data.message});
-            $http.get(api('log')).then(onGetLog);
+            getLogs();
         }   
     }
 
     function initializeVisualization(){
+        $scope.events = [];
+        for(var logName in $scope.eventDict){
+            for (var i = 0; i < $scope.eventDict[logName].length; i++) {
+                var tempEvent = $scope.eventDict[logName][i];
+                tempEvent.logName = logName;
+                $scope.events.push(tempEvent);
+            }
+        }
+
         $scope.rawEventTooltips = visualizationHelper.generateRawEventTooltips(
             $scope.events
         );
 
         $scope.eventCategories = [];
-
         $scope.eventNames = visualizationHelper.eventNames;
-
         for(var category in visualizationHelper.tooltipIconMapping){
             $scope.eventCategories.push([category, true]);
         }
 
+        $scope.logNameStatuses = [];
+        for(var i in $scope.logNames){
+            $scope.logNameStatuses.push([$scope.logNames[i], true]);
+        }
         renderVisualization();
     }
 
-    function renderVisualization(async){
+    function renderVisualization(async) {
         $scope.spatialPrimaryHeatmapBlocks = {};
         $scope.spatialSecondaryHeatmapBlocks = {};
 
-        visualizationHelper.spatial.calculateBlockRawValues(
+        visualizationHelper.aggregate.spatial.calculateBlockRawValues(
             $scope.events, 
-            $scope.temporalSliderValues,
+            $scope.logNameStatuses,
             $scope.spatialPrimaryHeatmapBlocks,
             $scope.spatialSecondaryHeatmapBlocks
         );
@@ -148,25 +182,19 @@ angular.module('viewerApp')
             $scope.spatialSecondaryHeatmapBlocks,
             $scope.spatialSliderValues
         );
-
-        $scope.eventTooltips = visualizationHelper.filterTooltips(
+        
+        console.log($scope.rawEventTooltips);
+        $scope.eventTooltips = visualizationHelper.aggregate.filterTooltips(
             $scope.rawEventTooltips, 
             $scope.spatialSliderValues,
-            $scope.temporalSliderValues,
-            $scope.eventCategories
+            $scope.eventCategories,
+            $scope.logNameStatuses
         );
-
-        $scope.aggregatedEventTooltips = visualizationHelper.spatial.aggregateTooltips(
+        $scope.eventTooltips = visualizationHelper.spatial.aggregateTooltips(
             $scope.eventTooltips
         );
 
-        console.log($scope.aggregateTooltips)
-
-        $scope.temporalHeatmapBlocks = visualizationHelper.temporal.calculateHeatmapBlocks(
-            $scope.events,
-            $scope.eventTooltips,
-            $scope.temporalSliderValues
-        );
+        console.log($scope.eventTooltips);
 
         if(async){
             $scope.$evalAsync();    
@@ -175,32 +203,36 @@ angular.module('viewerApp')
         }
     }
 
+    $scope.filterChange = function(){
+        renderVisualization(true);
+    };
+
     $scope.tooltipClick = function($event){
         var key = $event.currentTarget.attributes.key.value;
         // console.log(key);
         // console.log($scope.eventTooltips["" + key]);
         var events;
 
-        for (var i = 0; i < $scope.aggregatedEventTooltips.length; i++) {
-            if($scope.aggregatedEventTooltips[i][0] === key){
-                events = $scope.aggregatedEventTooltips[i][1];
+        for (var i = 0; i < $scope.eventTooltips.length; i++) {
+            if($scope.eventTooltips[i][0] === key){
+                events = $scope.eventTooltips[i][1];
             }
         }
 
-        // console.log(events);
-
         $scope.logEvents = events;
-        // console.log(events);
+        console.log(events);
         $('#popupModal').modal()
     };
 
     $scope.eventClick = function($event){
+        // var serializedEvent = $event.currentTarget.attributes.event.value;
+        var logName = $event.currentTarget.attributes.logName.value;
         var index = $event.currentTarget.attributes.index.value;
         var message = '' + 
             '<center>' + 
                 '<iframe ' + 
                     'id="popup-iframe" ' + 
-                    `src="#!/popup?logName=${$scope.logName}&index=${index}" ` + 
+                    `src="#!/popup?logName=${logName}&index=${index}" ` + 
                     'frameborder="no"></iframe>' + 
             '</center>';
 
@@ -211,11 +243,5 @@ angular.module('viewerApp')
         });
     }
 
-    $scope.categoryChange = function(){
-        renderVisualization(true);
-    };
-
     initialize();
 });
-
-

@@ -28,6 +28,10 @@ def preprocess_log(raw_log):
 
 
 def on_exit():
+    stop_record_file = open('/Users/alok/.porta/StopScreenRecording', 'w')
+    stop_record_file.write('stop')
+    stop_record_file.close()
+
     global recording_name
     log_filepath = os.path.join(logsDir, '{}.json'.format(recording_name))
     log = preprocess_log({
@@ -46,9 +50,15 @@ def clean():
     utils.clean_bashrc()
     utils.clean_directories()
     utils.restart_chrome()
+    # os.system('touch /Users/alok/.porta/StopScreenRecording')
 
 
 def start(args):
+    try:
+        os.remove('/Users/alok/.porta/StopScreenRecording')
+    except Exception as e:
+        pass
+
     global recording_name, tutorial_website
 
     if len(args) < 3:
@@ -60,11 +70,14 @@ def start(args):
     recording_name = args[1]
     tutorial_website = args[2]
 
+    os.system('source ~/.bashrc; tab /Applications/Chromium.app/Contents/MacOS/Chromium {} --disable-web-security --user-data-dir --allow-running-insecure-content --profile-directory=\\\'Profile 2\\\''.format(tutorial_website))
+    os.system('source ~/.bashrc; tab /Users/alok/dev/HciResearch/Porta/Recorder/ScreenRecorder ./ScreenRecord.applescript {}'.format(recording_name))
+
     utils.setup_directories()
     utils.setup_bashrc()
     generate_all_shims()
     utils.restart_bash()
-    os.system('/Applications/Chromium.app/Contents/MacOS/Chromium "{}" --profile-directory="Profile 2"'.format(tutorial_website))
+    
     log_server = LogServer(events, tutorial_website)
     log_server.start()
 

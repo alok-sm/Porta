@@ -1,3 +1,92 @@
-<p>This is the popup view.</p>
-<br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-<h1>Hello</h1>
+<div ng-if="event._eventType === 'toolchainEvent'">
+    <h2>Successful run</h3>
+    <pre>{{ event.command.join(' ').replace('/Users/alok/.portaTemp/stubs', '') }}</pre>
+    <h3>Files: </h3>
+    <div ng-repeat="(key, val) in event.files">
+        <h4>{{key}}</h4>
+        <pre>{{val}}</pre>
+    </div>    
+
+    <h3>Working directory:</h3>
+    <pre>{{event.pwd}}</pre>
+
+    <h3>Return code:</h3>
+    <pre>{{event.returnCode}}</pre>
+
+    <h3>Stdout:</h3>
+    <pre>{{event.stdout}}</pre>
+
+    <h3>Stderr:</h3>
+    <pre>{{event.stderr}}</pre>
+</div>
+
+<div ng-if="event._eventType === 'toolchainError'">
+    <h2>Error</h3>
+    <pre>{{ event.command.join(' ').replace('/Users/alok/.portaTemp/stubs', '') }}</pre>
+    <h3>Files: </h3>
+    <div ng-repeat="(key, val) in event.files">
+        <h4>{{key}}</h4>
+        <pre>{{val}}</pre>
+    </div>    
+
+    <h3>Working directory:</h3>
+    <pre>{{event.pwd}}</pre>
+
+    <h3>Return code:</h3>
+    <pre>{{event.returnCode}}</pre>
+
+    <h3>Stdout:</h3>
+    <pre>{{event.stdout}}</pre>
+
+    <h3>Stderr:</h3>
+    <pre>{{event.stderr}}</pre>
+
+</div>
+
+<div ng-if="event._eventType === 'selectionChange'">
+    <h2>Copy to clipboard</h3>
+    <h3>Copied text:</h3>
+    <pre>{{event.text}}</pre>
+</div>
+
+<div ng-if="event._eventType === 'newTab'">
+    <h2>Open a new tab</h2>
+    <h3>Url:</h3>
+    <pre>{{event.url}}</pre>
+</div>
+
+<div ng-if="event._eventType === 'commandExec'">
+    <h2>Terminal command</h2>
+    <h4>Command:</h4>
+    <pre>{{event.command}}</pre>
+    <h3>User:</h3>
+    <pre>{{event.user}}</pre>
+    <h3>Working directory:</h3>
+    <pre>{{event.pwd}}</pre>
+    <h3>host:</h3>
+    <pre>{{event.host}}</pre>
+</div>
+
+<div ng-if="event._eventType === 'browserError'">
+    <div ng-if="event.is404">
+        <h2>Resource 404</h2>
+        <h3>Page URL:</h3>
+        <pre>{{event.originUrl}}</pre>
+        <h3>Resource URL:</h3>
+        <pre>{{event.url}}</pre>
+    </div>
+    <div ng-if="!event.is404">
+        <h2>Javascript Error: {{event.type}}</h2>
+        <h4>Page URL:</h4>
+        <pre>{{event.originUrl}}</pre>
+        <h4>File: {{event.url}}</h4>
+        <h4>{{event.line}}</h4>
+        <pre>{{event.file}}</pre>
+        <h4>Stack Trace:</h4>
+        <pre>{{event.stack}}</pre>
+    </div>
+</div>
+
+<div ng-if="event._eventType === 'devtoolsOpen'">
+    <h2>Chrome developer tools opened here</h2>
+</div>

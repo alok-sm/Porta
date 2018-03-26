@@ -12,8 +12,8 @@ from Commons.constants import logserver_port
 from urllib.parse import urlparse
 
 def to_be_logged(data, tutorial_website):
-    if _eventType in ['mouseEnter', 'selectionChange', 'scrollEnd']:
-        tutorial_url = urlparse(tutorial_url)
+    if data['_eventType'] in ['mouseEnter', 'selectionChange', 'scrollEnd']:
+        tutorial_url = urlparse(tutorial_website)
         event_url = urlparse(data['tab']['url'])
         return tutorial_url.netloc == event_url.netloc and tutorial_url.path == event_url.path
 
@@ -35,7 +35,7 @@ class LogServer:
             return jsonify({'status': 'success'})
 
     def start(self):
-        self.flask_app.run(host=logserver_host, port=logserver_port, threaded=True)
+        self.flask_app.run(host=logserver_host, port=logserver_port, threaded=False)
 
 
 def main():

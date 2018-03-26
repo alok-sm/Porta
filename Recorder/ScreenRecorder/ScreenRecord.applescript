@@ -25,8 +25,6 @@ on run argv
 	set filePath to (path to movies folder as string) & filename & ".mov"
 	set fileTarget to "/Users/alok/.porta/StopScreenRecording"
 
-	do shell script "echo init done"
-	
 	tell application "QuickTime Player"
 		activate
 		set newScreenRecording to new screen recording

@@ -39,6 +39,7 @@ def setup_bashrc():
 
 
 def stop_chrome():
+    return
     os.system('pkill -9 "Chromium"')
 
 
@@ -60,11 +61,13 @@ def generate_chrome_cmd(url=None, extension_paths=None, args=None):
 
 
 def restart_chrome():
+    return
     stop_chrome()
     os.system(generate_chrome_cmd())
 
 
 def restart_chrome_with_recorder_extension(tutorial_website):
+    return
     stop_chrome()
     extension_path = os.path.abspath(os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
@@ -73,6 +76,7 @@ def restart_chrome_with_recorder_extension(tutorial_website):
 
 
 def restart_chrome_with_viewer_extension(tutorial_website):
+    return
     stop_chrome()
     extension_path = os.path.abspath(os.path.join(
         os.path.dirname(os.path.realpath(__file__)),

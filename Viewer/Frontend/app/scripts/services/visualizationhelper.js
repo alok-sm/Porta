@@ -5,24 +5,33 @@ angular.module('viewerApp')
     var helper = {
         nonActionableEvents: ['mouseEnter', 'scrollEnd'],
         tooltipIconMapping: {
-            toolchainEvent:  '/images/icons/error.png',
-            selectionChange: '/images/icons/clipboard.png',
-            devtoolsOpen: '/images/icons/clipboard.png',
-            tabsChange: '/images/icons/clipboard.png'
+            toolchainEvent:  'ok',
+            selectionChange: 'copy',
+            devtoolsOpen: 'wrench',
+            newTab: 'new-window',
+            commandExec: 'modal-window',
+            toolchainError: 'remove',
+            browserError: 'globe'
         },
         eventNames: {
-            toolchainEvent:  'Tool Chain',
+            toolchainEvent:  'Tool chain',
             selectionChange: 'Clipboard',
             devtoolsOpen: 'Open Developer Tools',
-            tabsChange: 'Open a new tab'
+            newTab: 'Open a new tab',
+            commandExec: 'Terminal command',
+            toolchainError: 'Tool chain error',
+            browserError: 'Browser error'
         },
         spatial: {
-            heatmapBlockHeight: 10,
+            heatmapBlockHeight: 5,
             gaussianModel: window.gaussian(window.innerHeight/4, 20000)
         },
         temporal: {
-            heatmapBlockWidth: 10,
-            gaussianModel: window.gaussian(0, 20000)
+            heatmapBlockWidth: 5,
+            gaussianModel: window.gaussian(0, 400)
+        },
+        aggregate:{
+            spatial:{}
         }
     };
 
@@ -95,7 +104,7 @@ angular.module('viewerApp')
     };
 
     helper.heatMapColorforValue = function(value){
-      return `hsla(${(1.0 - value) * 240}, 100%, 50%, 0.7)`;
+      return `rgba(255, 0, 0, ${value})`
     };
 
     helper.spatial.calculateHeatmapBlocks = function(primaryHeatmapBlocks, secondaryHeatmapBlocks, spatialRange){
@@ -111,10 +120,11 @@ angular.module('viewerApp')
 
         for(var y = blankPosition; y < high; y += helper.spatial.heatmapBlockHeight){
             var primaryIntensity = primaryHeatmapBlocks[y];
-            primaryIntensity = (primaryIntensity === undefined)? 0: primaryIntensity;
+            primaryIntensity = (!!primaryIntensity)? primaryIntensity: 0.0000000000000001;
 
             var secondaryIntensity = secondaryHeatmapBlocks[y];
-            secondaryIntensity = (secondaryIntensity === undefined)? 0: secondaryIntensity;
+            secondaryIntensity = (!!secondaryIntensity)? secondaryIntensity: 0.0000000000000001;
+
             var total = primaryScale * primaryIntensity + secondaryScale * secondaryIntensity;
             totals.push(total);
         }    
@@ -157,14 +167,18 @@ angular.module('viewerApp')
                 continue;
             }
 
+            // debugger;
+
             toolTips.push({
-                serializedEvent: window.encodeURI(JSON.stringify(events[i])),
+                text: helper.eventNames[events[i]._eventType],
                 event: events[i],
                 x: document.body.scrollWidth * (events[i].timestamp - startTime) / (endTime - startTime),
                 y: events[i].bounds.y + (events[i].bounds.height - 20) / 2,
                 icon: helper.tooltipIconMapping[events[i]._eventType]
             });
         }
+
+
 
         return toolTips;
     };
@@ -181,6 +195,18 @@ angular.module('viewerApp')
 
         for (i = 0; i < toolTips.length; i++) {
             var toolTip = toolTips[i];
+
+            if(toolTip.event._eventType === 'commandExec'){
+                if(toolTip.event.command.startsWith('gcc') || toolTip.event.command.startsWith('javac') || toolTip.event.command.startsWith('python')){
+                    continue
+                }
+            }
+
+            if(toolTip.event._eventType === 'newTab'){
+                if(toolTip.event.url.startsWith('chrome')){
+                    continue;
+                }
+            }
 
             if(! eventCategories[toolTip.event._eventType]){
                 continue;
@@ -241,6 +267,95 @@ angular.module('viewerApp')
 
         return blocks;
     };
+
+    helper.aggregate.spatial.calculateBlockRawValues = function (events, logNameStatuses, primaryHeatmapBlocks, secondaryHeatmapBlocks) {
+        var logNameViz = {};
+        for (var i = 0; i < logNameStatuses.length; i++) {
+            logNameViz[logNameStatuses[i][0]] = logNameStatuses[i][1];
+        }
+        for(var i = 0; i < events.length; i++){
+            
+            if(!logNameViz[events[i].logName]){
+                continue;
+            }
+            var event = events[i];
+            if(event._eventType === 'mouseEnter'){
+                helper.spatial.createPrimaryHeatmapElement(event, primaryHeatmapBlocks);
+            }else if(event._eventType === 'scrollEnd'){
+                helper.spatial.createSecondaryHeatmapElement(event, secondaryHeatmapBlocks);
+            }
+        }
+    }
+
+    helper.aggregate.filterTooltips = function(toolTips, spatialRange, eventCategoriesArray, logNameStatuses){
+        // debugger;
+        var eventCategories = {};
+        for (var i = 0; i < eventCategoriesArray.length; i++) {
+            var category = eventCategoriesArray[i];
+            eventCategories[category[0]] = category[1];
+        }
+        // lol
+
+        var logNameViz = {};
+
+        for (var i = 0; i < logNameStatuses.length; i++) {
+            logNameViz[logNameStatuses[i][0]] = logNameStatuses[i][1];
+        }
+
+        var filtered = [];
+
+        for (i = 0; i < toolTips.length; i++) {
+            var toolTip = toolTips[i];
+
+            if(toolTip.event._eventType === 'newTab'){
+                if(toolTip.event.url.startsWith('chrome')){
+                    continue;
+                }
+            }
+
+            if(toolTip.event._eventType === 'commandExec'){
+                if(toolTip.event.command.startsWith('gcc') || toolTip.event.command.startsWith('javac') || toolTip.event.command.startsWith('python')){
+                    continue
+                }
+            }
+
+            if(! eventCategories[toolTip.event._eventType]){
+                continue;
+            }
+
+             if(! logNameViz[toolTip.event.logName]){
+                continue;
+            }
+
+            if(toolTip.y < spatialRange[0] || spatialRange[1] < toolTip.y){
+                continue;
+            }
+
+            filtered.push(toolTip);
+        }
+
+        return filtered;
+    }
+
+    helper.spatial.aggregateTooltips = function(tooltips){
+        // console.log(tooltips)
+        // debugger;
+        var aggregationsDict = {}
+        var aggregations = []
+
+        for (var i = 0; i < tooltips.length; i++) {
+            var tip = tooltips[i]
+            if(!aggregationsDict[tip.y]){
+                aggregationsDict[tip.y] = [];
+            }
+            aggregationsDict[tip.y].push(tip);
+        }
+
+        for(var y in aggregationsDict){
+            aggregations.push([y, aggregationsDict[y]]);
+        }
+        return aggregations;
+    }
 
     return helper;
 });

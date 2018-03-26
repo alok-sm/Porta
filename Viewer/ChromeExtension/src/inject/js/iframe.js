@@ -1,5 +1,13 @@
 function getContentWindow(frameId){
-    return window.top.document.getElementById(frameId).contentWindow;
+    // return window.top.document.getElementById(frameId).contentWindow;
+    try {
+        var contentWindow = window.top.document.getElementById(frameId).contentWindow;
+        return contentWindow;
+    }
+    catch(err) {
+        return null;
+    }
+
 }
 
 function isInFrameWithId(id){
@@ -41,6 +49,6 @@ chrome.extension.sendMessage({ignore: true}, function(response) {
                 }
                 clearInterval(readyStateCheckInterval);
         }
-    }, 100);
+    }, 1000);
 });
 

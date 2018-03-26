@@ -25,7 +25,13 @@ chrome.extension.onMessage.addListener(
     }
 );
 
-chrome.tabs.onUpdated.addListener(function() {
+chrome.tabs.onUpdated.addListener(function(tabId, changeInfo, tab) {
+    if(changeInfo.url){
+        api.logFromBackgroundScript({
+            _eventType: 'newTab',
+            url: changeInfo.url
+        });
+    }
     chrome.tabs.query({}, function(tabs){
         for (var i = 0; i < tabs.length; i++) {
             if(tabs[i].status !== 'complete'){
@@ -52,5 +58,5 @@ function onTabsChange(native_tabs){
     api.logFromBackgroundScript({
         _eventType: 'tabsChange',
         tabs: tabs
-    })
+    });
 }

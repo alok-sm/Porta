@@ -7,7 +7,7 @@ import os
 
 def main():
     if len(sys.argv) < 2:
-        print('record / view / clean / init?')
+        print('record / view / clean?')
         return
     elif sys.argv[1] == 'record':
         recorder.start(sys.argv[1:])
@@ -15,8 +15,6 @@ def main():
         recorder.clean()
     elif sys.argv[1] == 'view':
         viewer.view(sys.argv[1:])
-    elif sys.argv[1] == 'init':
-        os.system('source ~/.bashrc; tab /Applications/Chromium.app/Contents/MacOS/Chromium --no-startup-window --disable-web-security --user-data-dir --allow-running-insecure-content')
     else:
         print('record / view / clean?')
 

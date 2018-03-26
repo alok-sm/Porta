@@ -294,7 +294,8 @@ fi;
 
 preexec_log() {
     # echo $(whoami) $(hostname) $(pwd) $*
-    python ~/dev/HciResearch/Porta/Recorder/CommandWatcher/send_request.py $(whoami) $(hostname) $(pwd) $*
+    # echo 'preece'
+    ~/dev/HciResearch/Porta/Recorder/CommandWatcher/send_request.py $(whoami) $(hostname) $(pwd) $*
 }
 
 

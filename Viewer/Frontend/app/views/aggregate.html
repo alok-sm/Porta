@@ -9,18 +9,9 @@
                 class="spatial-heatmap-block"
                 style="{{visualizationHelper.spatial.generateHeatmapStyleString(block[0], block[1])}}"></div>
 
-            <!-- <div 
-                class="event-tooltip-spatial"
-                ng-repeat="tooltip in eventTooltips"
-                ng-click="tooltipClick($event)"
-                index="{{tooltip.event.index}}"
-                style="top:{{tooltip.y}}px;">
-                <span class="glyphicon glyphicon-{{tooltip.icon}}"></span>
-            </div> -->
-
             <div 
                 class="event-tooltip-spatial"
-                ng-repeat="tooltip in aggregatedEventTooltips"
+                ng-repeat="tooltip in eventTooltips"
                 ng-click="tooltipClick($event)"
                 style="top:{{tooltip[0]}}px;"
                 key="{{tooltip[0]}}">
@@ -38,14 +29,31 @@
 
     <div id="filters-container">
         <div id="filters">
-            <h3>Filter events</h3>
+            <h3>Filter Events</h3>
             <p ng-repeat="category in eventCategories">
                 <label>
                     <input 
                         type="checkbox"
                         ng-model="category[1]" 
-                        ng-change="categoryChange()"
+                        ng-change="filterChange()"
                         checklist-value="1"> {{eventNames[category[0]]}}
+                </label>
+            </p>
+
+            <br><br>
+
+            <h3>Filter Users</h3>
+            <p ng-repeat="logName in logNameStatuses">
+                <label>
+                    <input 
+                        type="checkbox"
+                        ng-model="logName[1]" 
+                        ng-change="filterChange()"
+                        checklist-value="1"> 
+                        <span
+                        ng-style="{color: logColors[logName[0]]}">
+                            {{logName[0]}}
+                        </span>
                 </label>
             </p>
         </div>
@@ -53,38 +61,7 @@
 </div>
 <div id="bottom-offset"></div>
 
-<nav class="navbar navbar-default navbar-fixed-bottom">
-    <div id="porta-bottombar">
-        <div id="temporal-heatmap">
-            <div 
-                ng-repeat="block in temporalHeatmapBlocks"
-                class="temporal-heatmap-block"
-                style="{{visualizationHelper.temporal.generateHeatmapStyleString(block[0], block[1])}}"></div>
-
-
-            <div 
-                class="event-tooltip-spatial"
-                ng-repeat="tooltip in eventTooltips"
-                ng-click="eventClick($event)"
-                index="{{tooltip.event.index}}"
-                style="left:{{tooltip.x}}px;">
-                <span class="glyphicon glyphicon-{{tooltip.icon}}"></span>
-            </div>
-            
-
-            <span
-                class="event-tooltip-spatial "
-                ></span>
-
-        </div>
-        <div id="temporal-slider-container">
-            <div id="temporal-slider"></div>
-        </div>
-    </div>
-</nav>
-
-
-
+<!-- Modal -->
 <div class="modal fade" id="popupModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -106,7 +83,8 @@
                             ng-click="eventClick($event)"
                             index="{{tooltip.event.index}}"
                             logName="{{tooltip.event.logName}}">
-                            <td>
+                            <td 
+                                ng-style="{color: logColors[tooltip.event.logName]}">
                                 <span 
                                     class="glyphicon glyphicon-{{tooltip.icon}} popup-text">    
                                 </span>
@@ -116,7 +94,8 @@
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </span>
                             </td>
-                            <td>
+                            <td
+                                ng-style="{color: logColors[tooltip.event.logName]}">
                                 <span class="popup-text">
                                     {{tooltip.text}}
                                 </span>
@@ -126,7 +105,8 @@
                                     &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                                 </span>
                             </td>
-                            <td>
+                            <td
+                                ng-style="{color: logColors[tooltip.event.logName]}">
                                 <span class="popup-text">
                                     {{tooltip.event.logName}}
                                 </span>

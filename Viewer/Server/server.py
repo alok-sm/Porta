@@ -36,7 +36,11 @@ class ViewServer:
 
         @self.app.route('/<name>/event/<int:index>')
         def get_event_at_index(name, index):
-            return jsonify(get_log(name)['events'][index])
+            events = get_log(name)['events']
+            return jsonify({
+                'first': events[0],
+                'event': events[index]
+            })
 
     def start(self):
         self.app.run(host='0.0.0.0', port=3000, threaded=False)

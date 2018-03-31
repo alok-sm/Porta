@@ -16,7 +16,8 @@ angular
     'ngRoute',
     'ngSanitize',
     'ngTouch',
-    'ngOnload'
+    'ngOnload',
+    'media-events'
   ])
   .config(function ($routeProvider) {
     $routeProvider

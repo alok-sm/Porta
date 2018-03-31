@@ -25,7 +25,7 @@
     <pre>{{ event.command.join(' ').replace('/Users/alok/.portaTemp/stubs', '') }}</pre>
     <h3>Files: </h3>
     <div ng-repeat="(key, val) in event.files">
-        <h4>{{key}}</h4>
+        <h3>{{key}}</h3>
         <pre>{{val}}</pre>
     </div>    
 
@@ -57,7 +57,7 @@
 
 <div ng-if="event._eventType === 'commandExec'">
     <h2>Terminal command</h2>
-    <h4>Command:</h4>
+    <h3>Command:</h3>
     <pre>{{event.command}}</pre>
     <h3>User:</h3>
     <pre>{{event.user}}</pre>
@@ -67,26 +67,46 @@
     <pre>{{event.host}}</pre>
 </div>
 
-<div ng-if="event._eventType === 'browserError'">
-    <div ng-if="event.is404">
-        <h2>Resource 404</h2>
-        <h3>Page URL:</h3>
-        <pre>{{event.originUrl}}</pre>
-        <h3>Resource URL:</h3>
-        <pre>{{event.url}}</pre>
-    </div>
-    <div ng-if="!event.is404">
-        <h2>Javascript Error: {{event.type}}</h2>
-        <h4>Page URL:</h4>
-        <pre>{{event.originUrl}}</pre>
-        <h4>File: {{event.url}}</h4>
-        <h4>{{event.line}}</h4>
-        <pre>{{event.file}}</pre>
-        <h4>Stack Trace:</h4>
-        <pre>{{event.stack}}</pre>
-    </div>
+<div ng-if="event._eventType === 'browserError' && event.is404">
+    <h2>Resource 404</h2>
+    <h3>Page URL:</h3>
+    <pre>{{event.originUrl}}</pre>
+    <h3>Resource URL:</h3>
+    <pre>{{event.url}}</pre>
+</div>
+<div ng-if="event._eventType === 'browserError' && !event.is404">
+    <h2>Javascript Error: {{event.type}}</h2>
+    <h3>Page URL:</h3>
+    <pre>{{event.originUrl}}</pre>
+    <h3>File: {{event.url}}</h3>
+    <h3>{{event.line}}</h3>
+    <pre>{{event.file}}</pre>
+    <h3>Stack Trace:</h3>
+    <pre>{{event.stack}}</pre>
 </div>
 
 <div ng-if="event._eventType === 'devtoolsOpen'">
     <h2>Chrome developer tools opened here</h2>
 </div>
+
+<div ng-if="event._eventType === 'videoPlay' || event._eventType === 'videoPause'">
+    <h2 ng-if="event._eventType === 'videoPlay'">Video Play</h2>
+    <h2 ng-if="event._eventType === 'videoPause'">Video Pause</h2>
+
+    <h3>Video:</h3>
+    <video 
+        class="video-player" 
+        id="eventVideo" 
+        on-play="eventVideoOnPlay()" 
+        ng-src="{{event.videoUrl}}" 
+        controls></video>
+</div>
+
+<h3>Screencast:</h3>
+    <video 
+        class="video-player" 
+        id="screencast" 
+        on-play="screencastOnPlay()"
+        src="http://localhost:8080/{{logName}}.mov" 
+        controls>
+        </video>

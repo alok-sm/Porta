@@ -11,7 +11,9 @@ angular.module('viewerApp')
             newTab: 'new-window',
             commandExec: 'modal-window',
             toolchainError: 'remove',
-            browserError: 'globe'
+            browserError: 'globe',
+            videoPlay: 'play',
+            videoPause: 'pause'
         },
         eventNames: {
             toolchainEvent:  'Tool chain',
@@ -20,7 +22,9 @@ angular.module('viewerApp')
             newTab: 'Open a new tab',
             commandExec: 'Terminal command',
             toolchainError: 'Tool chain error',
-            browserError: 'Browser error'
+            browserError: 'Browser error',
+            videoPlay: 'Video Play',
+            videoPause: 'Video Pause'
         },
         spatial: {
             heatmapBlockHeight: 5,

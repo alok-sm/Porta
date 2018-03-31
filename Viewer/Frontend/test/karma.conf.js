@@ -36,6 +36,7 @@ module.exports = function(config) {
       'bower_components/jquery-ui/jquery-ui.js',
       'bower_components/bootbox.js/bootbox.js',
       'bower_components/randomcolor/randomcolor.js',
+      'bower_components/angular-media-events/dist/media-events.js',
       'bower_components/angular-mocks/angular-mocks.js',
       // endbower
       'app/scripts/**/*.js',

@@ -16,13 +16,13 @@ angular.module('viewerApp')
             videoPause: 'pause'
         },
         eventNames: {
-            toolchainEvent:  'Tool chain',
+            toolchainEvent:  'Toolchain',
             selectionChange: 'Clipboard',
             devtoolsOpen: 'Open Developer Tools',
-            newTab: 'Open a new tab',
-            commandExec: 'Terminal command',
-            toolchainError: 'Tool chain error',
-            browserError: 'Browser error',
+            newTab: 'Open Browser Tab',
+            commandExec: 'Terminal Command',
+            toolchainError: 'Toolchain Error',
+            browserError: 'Browser Error',
             videoPlay: 'Video Play',
             videoPause: 'Video Pause'
         },
